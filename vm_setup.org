@@ -1,4 +1,4 @@
-* Install and Redeem
+* Install Chrome (and ssh for Windows)
 You should have already followed the instructions to [[do_before.org][install software]], if you haven't, right now you should:
 1. [[https://www.google.com/chrome/browser/desktop/index.html][Install Chrome]]
 2. [[http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html][Install SSH (windows only)]]
