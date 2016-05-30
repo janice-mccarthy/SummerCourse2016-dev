@@ -24,10 +24,10 @@ You should have already followed the instructions to [[do_before.org][install so
       - Mac: open a terminal, then follow the *Linux* instructions
       - Linux: At the command line, type ~ssh bitnami@colab-sbx-XXX.oit.duke.edu, then hit enter When you are prompted for the password, enter the password given to you in step 9.
       - Windows: Here are instructions for [[http://kb.mediatemple.net/questions/1595/Using+SSH+in+PuTTY+%28Windows%29][Putty]], other clients will be similar.  Hostname is colab-sbx-XXX.oit.duke.edu (the XXX is YOUR VM's id), Username is bitnami, and password is the one provided to you in step 9.
-   5. If you logged in successfully, you should be presented with a "command prompt" that looks something like this (with your VM id instead):
+   5. If you logged in successfully, you should be presented with a "command prompt" that looks something like this:
 
   #+begin_src sh
-bitnami@colab-sbx-249.oit.duke.edu:~$ 
+bitnami@ubuntu14-generic-template-01:~$ 
   #+end_src
 * Next Step
    Once you have successfully SSHed into your VM, you are ready to [[start_jupyter.org][Start Jupyter]]
