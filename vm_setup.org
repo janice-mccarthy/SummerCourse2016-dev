@@ -1,0 +1,41 @@
+* Install and Redeem
+You should have already followed the instructions to [[do_before.org][install software and redeem your voucher]], if you haven't, right now you should:
+1. [[https://www.google.com/chrome/browser/desktop/index.html][Install Chrome]]
+2. [[http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html][Install SSH (windows only)]]
+3. [[https://www.microsoftazurepass.com/howto][Redeem your Azure pass]]
+* Setting Up Your Virtual Machine
+** Allocating Your Virtual Machine
+  1. Log on to https://portal.azure.com/
+  2. Click "+ New" in the upper left corner
+  3. In the search box that opens, search for "Docker on Ubuntu Server"
+  4. Click on "Docker on Ubuntu Server"
+  5. The panel that opens on right should say "Docker on Ubuntu Server" at the top, a bunch of text in the middle, and a blue "Create" button at the bottom.  Click on the "Create" button.
+  6. In the "Create VM" panel that opens up, you will need to configure the following:
+     - Host Name :: your choice of letters and number, just be sure you will remember, and don't mind typing them a few times.
+     - User Name :: your choice of letters and number, just be sure you will remember, and don't mind typing them a few times.
+     - Password :: your choice, just be sure you will remember them, and don't mind typing them a few times.
+     - Pricing Tier :: I recommend selecting *Standard D3 v2* (you will need to click "View all" to find this option).  Be careful not to select one of the similar sounding options.
+  7. Select *Option Configuration Network, storage, diagnostics* ->
+  8. In the Panel that opens select *Endpoints Configured* and enter the following
+     - NAME :: Jupyter
+     - PRIVATE PORT :: 8888
+     - PROTOCOL :: TCP
+     - PUBLIC PORT :: 8888
+  9. After you have configured the above, click the blue "OK" and "Create" buttons.
+  10. This can take several minutes, so you might want to do something while you wait.
+  11. Once your virtual machine says "Running" you are ready to continue to the next step.
+** SSH to your Virtual Machine
+   1. Click "Virtual machines (classic)" in the left sidebar
+   2. Click on your VM in the list that opens.
+   3. Note what it says under *DNS name* (this should be what you entered for "Host Name" with ".cloudapp.net" at the end.
+   4. SSH to your virtual machine
+      - Mac: open a terminal, then follow the *Linux* instructions
+      - Linux: At the command line, type ~ssh USERNAME@DNS_name~, then hit enter (where *USERNAME* is the user name you selected during VM configuration, and *DNS_name* is the DNS name from your Azure Dashboard.  When you are prompted for the password, put in the password you selected during VM configuration.
+      - Windows: Here are instructions for [[http://kb.mediatemple.net/questions/1595/Using+SSH+in+PuTTY+%28Windows%29][Putty]], other clients will be similar.  Hostname is the *DNS_name* is the DNS name from your Azure Dashboard, Username is the user name you selected during VM configuration, and password is the password you selected during VM configuration.
+   5. If you logged in successfully, you should be presented with a "command prompt" that looks something like this (with your username and hostname instead):
+
+  #+begin_src sh
+josh@mcaw1:~$ 
+  #+end_src
+* Next Step
+   Once you have successfully SSHed into your VM, you are ready to [[start_jupyter.org][Start Jupyter]]
