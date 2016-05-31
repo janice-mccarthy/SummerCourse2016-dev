@@ -19,7 +19,7 @@ Status: Downloaded newer image for janicemccarthy/dukehtscourse:latest
 ** First Time
    If this is your time following these instructions for your VM, run the following command to download the workshop notebooks from Github.  If you have already run this command before, skip this step and continue with [[Updating Notebooks]] below
   #+begin_src sh
-   git clone https://github.com/granek/microbiome_workshop.git
+   git clone https://github.com/janice-mccarthy/SummerCourse2016.git
   #+end_src
 * Updating Notebooks
   Run the following to be sure that you have up-to-date Jupyter Notebooks
