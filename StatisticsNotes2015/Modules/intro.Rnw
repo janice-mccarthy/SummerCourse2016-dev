@@ -1,0 +1,89 @@
+\begin{frame}[fragile]{RNA-Seq: A tool for measuring abundance of RNA from cells}
+<<echo=FALSE>>=
+kable(read.csv("../Figures/countexample.csv"),row.names = NA)
+@ 
+Data from dry run.
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{PCR/Microarray versus RNA-seq: Common objectives and challenges}
+  \begin{itemize}
+  \item Hypothesis testing: Is the RNA level related to a phenotype, or changed
+        in response to treatment or over time
+  \item Effect size estimation: How to quantify the effect size and then how to estimate it from data 
+  \item Classification: Predict an outcome on the basis of baseline RNA levels from multiple genes
+  \item Class Discovery: Discover subsets on the basis of baseline levels or changes in the levels
+        of multiple genes
+  \item Multiplicity: several candidate genes or genome-wide analysis
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{PCR/Microarray versus RNA-seq: Main Difference}
+  \begin{itemize}
+  \item PCR/Microarray
+    \begin{itemize}
+    \item Quantify the "expression" of a gene
+    \end{itemize}
+  \item RNA-seq
+    \begin{itemize}
+    \item The observed data are digital counts
+    \end{itemize}
+  \item Two general approaches for analysis of RNA-seq
+    \begin{itemize}
+    \item Two-stage method: Convert counts to "Expression" (e.g., RPKM, FPKM, TPM) and then 
+      plug these into a standard test (e.g., t-test) 
+    \item One-stage method: Relate the counts directly to the phenotype (through statistical methods for modeling counts)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Emphasis, Focus, Approach and Topics}
+  \begin{itemize}
+  \item Concepts rather than on mechanics (e.g., which software or method to use to fit a regression
+        model)
+  \item How statistical concepts are misunderstood or misinterpreted
+  \item How and why things could go wrong
+  \item Use simulation as a tool to illustrate these issues 
+  \item Topics:
+    \begin{itemize}
+    \item Statistical Inference (testing and estimation)
+    \item Supervised learning (classification and regression)
+    \item Unsupervised learning (class discovery)
+    \item Multiple testing
+    \item Distributions and regression models for counts
+    \end{itemize}
+  \item Week 1: Focus on general issues
+  \item Week 2 and later: Focus on RNA-Seq specific issues
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{On Statistics, Conclusions and Solutions}
+"No isolated experiment, however significant in itself, can suffice 
+for the experimental demonstration of any natural phenomenon; for 
+the 'one chance in a million' will undoubtedly occur, with no less 
+and no more than its appropriate frequency, however surprised we may 
+be that it should occur to us."
+\vskip 0.1in
+Ronald Aylmer Fisher 
+(The Design of Experiments (1935), 16)
+\vskip 0.5in
+"Doing statistics is like doing crosswords except that one 
+cannot know for sure whether
+one has found the solution."
+\vskip 0.1in
+John Wilder Tukey
+(Annals of Statistics, 2002:30(6))
+
+
+\end{frame}
+
+
+
+  

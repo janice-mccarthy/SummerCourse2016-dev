@@ -1,0 +1,938 @@
+
+
+
+<<echo=FALSE>>=
+
+set.seed(123)
+n=20
+x0 <- rmvnorm(n,mean=c(-5,-5)/3,sigma = 0.5*diag(2))
+x1 <- rmvnorm(n,mean=c(5,5)/3,sigma = 0.5*diag(2))
+
+
+mM=function(x,y)
+  {
+    z=c(x,y)
+    c(min(z),max(z))
+  }
+
+@ 
+\begin{frame}
+  \frametitle{Classification Problem}
+<<predmod1,echo=FALSE,fig=TRUE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Clear-cut case}
+<<predmod2,echo=FALSE,fig=TRUE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+abline(0,-1)
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Clear-cut case?}
+<<predmod3,echo=FALSE,fig=TRUE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+abline(0,-1)
+abline(-1,-1,lty=2)
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Clear-cut case??}
+<<predmod3a,echo=FALSE,fig=TRUE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+abline(0,-1)
+abline(-1,-1,lty=2)
+abline(0,-2,lty=3)
+@ 
+\end{frame}
+
+
+
+
+<<echo=FALSE>>=
+rm(x0,x1)
+set.seed(123)
+x0 <- rmvnorm(n,mean=c(-5,-5)/3,sigma = 10*diag(2))
+x0[17,2]=x0[17,2]-0.7
+x1 <- rmvnorm(n,mean=c(5,5)/3,sigma = 10*diag(2))
+DAT=data.frame(factor(rep(c(0,1),c(n,n))),rbind(x0,-x1))
+colnames(DAT)=c("y","x0","x1")
+x=rbind(x0,x1)
+y=rep(0:1,each=n)
+@ 
+
+
+
+\begin{frame}
+  \frametitle{Less Clear-cut case}
+<<predmod4,echo=FALSE,fig=TRUE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Less Clear-cut case}
+<<predmod5,echo=FALSE,fig=TRUE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+abline(0,-1)
+
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Less Clear-cut case}
+<<predmod6,echo=FALSE,fig=TRUE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+abline(0,-1)
+abline(1,-1,lty=2)
+@ 
+\end{frame}
+
+
+\begin{frame}[plain]
+  \frametitle{Regression Problem}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE>>=
+set.seed(10)
+x<-1:10
+y=x+rnorm(10,0.5)
+library(splines)
+
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Linear Regression (lin)}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+modlm=lm(y~x)
+lines(x,predict(modlm),col=3)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Spline Regression (spl)}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+modns=lm(y~ns(x,df=4))
+lines(x,predict(modns),col=4)
+#lines(x,predict(modns),col=4)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Connect the dots (ctd)}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+#lines(x,predict(modlm),col=3)
+#lines(x,predict(modns),col=4)
+lines(x,y,col=2)
+@ 
+\end{figure}
+\end{frame}
+\begin{frame}[plain]
+  \frametitle{Which Approach?}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+lines(x,predict(modlm),col=3)
+lines(x,predict(modns),col=4)
+lines(x,y,col=2)
+@ 
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Supervised Learning (Classification)}
+  \begin{itemize}
+\item Goal: Predict a binary outcome ($Y$) on the basis of 
+      baseline information ($X$)
+\item $Y$ assumes the value 0 or 1 (e.g., control vs case, or AML vs ALL)
+\item $X$ could be single variable or be a vector of multiple variables
+\item Example: Can you predict $Y$ on the basis of two genes say $X_1$ and $X_2$
+\item Note that a goal is to build a machine that will take on two values $X_1$ and $X_2$
+      and return a 0 or a 1
+\item You can denote this machine as a function $g(x_1,x_2)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Classifier}
+  \begin{itemize}
+\item We will denote the predictor or classifier by $g(x)$
+\item $x=(x_1,x_2)$ is the vector of gene expressions for genes 1 and 2
+\item Based on $x$, the classifier $g$ makes a prediction for the outcome
+\item Note that $g(x)=0$ or $g(x)=1$
+\item The prediction is {\it correct} if $Y=1$ and $g(x_1,x_2)=1$, or $Y=0$ and $g(x_1,x_2)=0$
+\item The prediction is {\it wrong} if $Y=0$ and $g(x_1,x_2)=1$, or $Y=1$ and $g(x_1,x_2)=0$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Prediction Assessment}
+\begin{table}
+\centering
+  \begin{tabular}{ccc}
+       &$g(x_1,x_2)=0$&$g(x_1,x_2)=1$\\
+  $Y=0$&True-Negative&False-Negative\\
+  $Y=1$&False-Negative&True-Positive
+  \end{tabular}
+\end{table}
+\end{frame}
+
+
+
+\begin{frame}{Steps to Construct a Classifier}
+  \begin{itemize}
+  \item Collect a random data set of size $n$ to build (train) a classifer 
+  \item This is called the training data
+  \item On the basis of these data, construct the classifier $g_n$
+  \item It is subscripted by $n$ to emphasize that it is trained on the
+        basis of the training data
+  \item Note that the final performance of $g_n$ is {\it not} 
+         be judged on the basis of the training data
+  \item It is to be judged on the basis of its performance on {\it future} data
+  \item Called testing data
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Steps in Notation}
+  \begin{itemize}
+  \item Collect the training data $(X_1,Y_1),\ldots,(X_n,Y_n)$
+  \item Construct a classifier $g_n$ on the basis of the training data
+  \item Apply $g_n$ to a new data set $X^*_1,\ldots,X_k^*$ to get
+  \item $k$ predictions: $\hat{Y}_1^*,\ldots,\hat{Y}_k^*$
+  \item Compare the predictions to the observed outcomes $Y^*_1,\ldots,Y^*_k$
+  \item Note that at the testing stage, you are blinded to the $Y^*_k$
+  \end{itemize}
+\end{frame}
+
+
+
+
+
+%% \begin{frame}
+%%   \frametitle{$k$-Nearest Neighborhood (Non-parametric)}
+%%   \begin{itemize}
+%%   \item The last two methods are parametric: you assume that you know the
+%%         functional form of the regression function up to three unknown parameters 
+%%   \item In an microarray experiment, it may not be appropriate to make strong
+%%         parametric assumptions
+%%   \item Non-parametric methods (e.g., $k$-NN) are preferred.
+%%   \item For each $x$ (point on the scatter plot), identify the $k$ nearest neighbors
+%%   \item Among the $k$ neighbors, count the number of responders (say $r_x$)
+%%   \item Set
+%%     \begin{equation*}
+%%       \hat{\eta}(x)=\frac{r_x}{k}
+%%     \end{equation*}
+%%   \end{itemize}
+%% \end{frame}
+
+
+\begin{frame}
+  \frametitle{k-Nearest Neighborhood}
+<<knn,echo=FALSE,fig=TRUE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+text(x0[14, 1],x0[14,2],label="x",cex=2)
+#symbols(x0[16, 1],x0[16,2],circles=2.1,add=TRUE,inches=FALSE)
+#symbols(x0[14, 1],x0[14,2],circles=1.3,add=TRUE,inches=FALSE)
+@ 
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{3-Nearest Neighborhood}
+<<knn3,echo=FALSE,fig=TRUE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+text(x0[14, 1],x0[14,2],label="x",cex=2)
+#symbols(x0[16, 1],x0[16,2],circles=2.1,add=TRUE,inches=FALSE)
+symbols(x0[14, 1],x0[14,2],circles=1.3,add=TRUE,inches=FALSE)
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{5-Nearest Neighborhood}
+<<knn5,echo=FALSE,fig=TRUE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+text(x0[14, 1],x0[14,2],label="x",cex=2)
+#symbols(x0[16, 1],x0[16,2],circles=2.1,add=TRUE,inches=FALSE)
+symbols(x0[14, 1],x0[14,2],circles=1.8,add=TRUE,inches=FALSE)
+
+@ 
+\end{frame}
+
+
+
+
+%% \begin{frame}
+%%   \frametitle{Mean Regression Model}
+%%   \begin{itemize}
+%%   \item $ E(Y)$ is the {\it unconditional} (on $X$) mean of $Y$. 
+%%   \item Model the mean relationship between $Y$ and $X$
+%%     \begin{equation*}
+%%       \eta(x)=E(Y|X=x)
+%%     \end{equation*}
+%%   \item $\eta(x)$ is the {\it conditional} (on $X$) mean of $Y$ given that $X$ has realized the value $x$.
+%%   \end{itemize}
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Bayes Classifier}
+%%   \begin{equation*}
+%%     g(X)=
+%%     \begin{cases}
+%%       1&\mbox{ if } \eta(X)\ge \frac{1}{2},\\
+%%       0&\mbox{ if } \eta(X)< \frac{1}{2}
+%%     \end{cases}
+%%   \end{equation*}
+%%   \begin{itemize}
+%%   \item This classifier is "optimal" in the sense that there is no better classifier
+%%         with respect to minimizing the error ($P(g(X)\ne Y)$).
+%%   \item Suppose that $g^*$ is another classifier. Then 
+%%     \begin{equation*}
+%%       P(g(X)\ne Y) \le  P(g^*(X)\ne Y)
+%%     \end{equation*}
+%%   \item Note that the optimality concerns $\eta(x)$ and not $\hat{\eta}(x)$.
+%%   \end{itemize}
+%% \end{frame}
+
+
+
+
+%% \begin{frame}
+%%   \frametitle{Logistic Regression (Parametric)}
+%%   \begin{itemize}
+%%   \item Most commonly used method for modeling the relationship between
+%%         a binary response and a set of co-variables
+%%   \begin{equation*}
+%%     \mathrm{logit}(\eta(x))=\beta_0 + \beta_1 x_1 + \beta_2 x_2,
+%%   \end{equation*}
+%%   where 
+%%   \begin{equation*}
+%%     \mathrm{logit}(\eta(x))=\log\bigg(\frac{p}{1-p}\bigg),
+%%   \end{equation*}
+%% for $p\in (0,1)$ is called the "logit" function.
+%% \end{itemize}
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Estimating $\eta(x)$}
+%%   \begin{itemize}
+%%    \item Estimate the model parameters  ($\beta_0,\beta_1$ and
+%% $\beta_2$) using maximum-likelihood estimation to get
+%%   $\hat{\beta}_0,\hat{\beta}_1$ and $\hat{\beta}_2$
+%% \item For the logistic model
+%%   \begin{equation*}
+%%     \hat{\eta}(x)=\frac{\exp(\hat{\beta}_0+\hat{\beta}_1x_1+\hat{\beta}_2x_2)}{1+\exp(\hat{\beta}_0+\hat{\beta}_1x_1+\hat{\beta}_2x_2)}
+%%   \end{equation*}
+%% \end{itemize}
+%% \end{frame}
+
+
+
+
+
+%% <<echo=FALSE>>=
+%% rm(n,x0,x1)
+%% @ 
+
+
+%% \begin{frame}
+%%   \frametitle{Other Classification Methods}
+%%   \begin{itemize}
+%% \item Fisher's Linear Discriminant
+%%  \item Support Vector Machines (SVM)
+%%   \item Classification and Regression Trees (CART)
+%%   \item Random Forests (aggregated trees)
+%%   \end{itemize}
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Bias versus Variance}
+%%   \begin{itemize}
+%% \item A very important principle in statistical modeling is the so called {\it bias-variance tradeoff}
+%% \item The bias of $\hat{\eta}(x)$ is
+%%   \begin{equation*}
+%%     b(x)=\hat{\eta}(x)-\eta(x)
+%%   \end{equation*}
+%% \item The variance of $\hat{\eta}(x)$ is
+%%     \begin{equation*}
+%%     v(x)=E(\hat\eta(x)-\eta(x))^2)
+%%   \end{equation*}
+%% \item The bias-variance tradeoff implies that both cannot be minimized simultaneously
+%% \item For example for the $k$-NN method increasing $k$ increases bias while decreasing variance
+%%   \end{itemize}
+%% \end{frame}
+
+
+%% \begin{frame}
+%%   \frametitle{Training and Testing}
+%%   \begin{itemize}
+%%   \item In practice, the model is first estimated (trained) using an initial set of data
+%%   \item This data set is usually called the "training" data
+%%   \item Once the model is trained, then it is applied to an "independent" set of data
+%%   \item This data set is usually called the "testing" (or validation) data set
+%%   \end{itemize}
+%% \end{frame}
+
+
+
+
+
+
+
+
+\begin{frame}
+  \frametitle{Parsimony}
+  \begin{itemize}
+\item The model should be parsimonious (less is more)
+\item Including too many noisy/unimportant 
+      features often degrades the performance of the classifier.
+\item Including highly dependent induces problems (e.g., multi-collinearity from simple linear regression).
+\item Additional complication:
+      It is not practically/computationally feasible to include tens of thousands
+      of features in the model. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Overfitting}
+  \begin{itemize}
+\item Two many parameters compared to the number of data points in the training set
+\item A complicated model will fit the training set well
+\item It will however perform poorly for an independent set. 
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[plain]
+  \frametitle{Overfitting}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE>>=
+set.seed(10)
+x<-1:10
+y=x+rnorm(10,0.5)
+library(splines)
+
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Linear Regression (lin)}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE,height=6,width=6>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+modlm=lm(y~x)
+lines(x,predict(modlm),col=3)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Spline Regression (spl)}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE,height=6,width=6>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+modns=lm(y~ns(x,df=4))
+lines(x,predict(modns),col=4)
+#lines(x,predict(modns),col=4)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Connect the dots (ctd)}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE,height=6,width=6>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+#lines(x,predict(modlm),col=3)
+#lines(x,predict(modns),col=4)
+lines(x,y,col=2)
+@ 
+\end{figure}
+\end{frame}
+\begin{frame}[plain]
+  \frametitle{RSS: \Sexpr{round(sum(resid(modlm)^2),1)} (lin) vs \Sexpr{round(sum(resid(modns)^2),1)} (spl) vs 0 (ctd)}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE,height=6,width=6>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+lines(x,predict(modlm),col=3)
+lines(x,predict(modns),col=4)
+lines(x,y,col=2)
+@ 
+\end{figure}
+\end{frame}
+
+
+\begin{frame}[plain]
+  \frametitle{New Data Set}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE,height=6,width=6>>=
+set.seed(11)
+y1=x+rnorm(10,0.5)
+par(mfrow=c(1,1),bg="white")
+plot(x,y1,pch="x",xlim=c(0,10),ylim=c(0,10))
+lmrss=sum((predict(modlm)-y1)^2)
+nsrss=sum((predict(modns)-y1)^2)
+ctdrss=sum((y1-y)^2)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{RSS: \Sexpr{round(lmrss,1)} (lin) vs \Sexpr{round(nsrss,1)} (spl) vs  \Sexpr{round(ctdrss,1)} (ctd)}
+\begin{figure}
+\centering
+<<fig=TRUE,echo=FALSE,height=6,width=6>>=
+set.seed(11)
+y1=x+rnorm(10,0.5)
+par(mfrow=c(1,1),bg="white")
+plot(x,y1,pch="x",xlim=c(0,10),ylim=c(0,10))
+lines(x,predict(modlm),col=3)
+lines(x,predict(modns),col=4)
+lines(x,y,col=2)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}{Two Challenges in Building a Classifier}
+  \begin{enumerate}
+  \item Feature Selection:
+    \begin{itemize}
+    \item It is neither feasible nor provident to build a classifier based on all available
+          variables
+    \item A subset of the variables has to be selected to build the model
+    \item This is also called feature extraction
+    \end{itemize}
+  \item Tuning Parameter Selection:
+    \begin{itemize}
+    \item Statistical methods may have one or more parameters that have to be set
+    \item For example when using $k$-NN, one has to decide what $k$ should be (e.g., 1, 3 or 5 or how about 8)?
+      \item Choosing the defaults set by the software is inappropriate  
+    \item The feature selection method could also have tuning parameters that have to be set
+          (e.g., the number of features to be selected)
+    \item The performance of the method could be highly sensitive to the 
+          choice of these parameters
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Feature Selection}
+  \begin{itemize}
+\item Reasonable Feature Selection is {\it critical} if not the most important
+      component of model building.
+\item You cannot expect to build a good model if you select poor features.      
+\item This is also called Feature Extraction
+\item We will talk about a few approaches that have been used in the literature.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Feature Selection (ranked based on test-statistic)}
+  \begin{itemize}
+\item Compute the two-sample t-test for all $m$ features (based on the training set) 
+\item Identify the top say 10 or 15 features (e.g, ranked
+      based on the absolute value of the test statistic).
+\item Build a model on these "top" features (based on the training set) 
+\item Alternatively, you could select all features for which the {\it P}-value is less
+      than a certain threshold (say 0.001).
+\item You can also use the Wilcoxon rank sum statistic to protect against choosing features
+      with outliers.
+\end{itemize}
+\end{frame}
+
+
+
+
+
+\begin{frame}
+  \frametitle{Feature Selection (Ordination Methods)}
+  \begin{itemize}
+\item A standard approach for reducing the dimension in the microarray setting
+      is the method of Principal Components (PCs)
+\item The PCs are combinations of the original variables (gene expressions) that have maximum variability
+\item The are also constructed as to be uncorrelated with another
+\item This attempts to address the issue of high dimension and multi-collinearity simultaneously.
+\item One can use the principal components (say the first two or three) as the features
+\item Alternatively, one can first reduce the dimension by using the two-sample test-statistic approach
+      and then get the PCs
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Tuning}
+  \begin{itemize}
+\item You cannot expect to be able to build a model using default values provided by the software
+      package.
+\item If you use {\it k}-NN you need to decide which $k$ (e.g., 3 or 5 or 7) you want to use
+\item If you use the simple feature selection method you need to determine how many "top" features you want 
+      to use
+\item If you are doing PC dimension reduction, you need to determine how many PCs you want to use.
+\item In some books and articles, "tuning" only refers to the choice of the model parameter (e.g., $k$ in $k$-NN)
+\item Must take a broader perspective as the choices in the FS part also affect the results.
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Validation}
+  \begin{itemize}
+\item Split the data into a training and a mutually exclusive testing
+      set
+\item Build the model (including feature selection, tuning) on the
+      {\it training} set
+\item Evaluate the performance of the model
+      on the {\it testing set}
+\item IMPORTANT: The model is built based on the {\it training}
+      set. The {\it testing} set should not contribute {\it any}
+      information.
+\item Violating this principle will invariably result in bias
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Error Substitution Validation}
+  \begin{itemize}
+\item Error Substitution Validation: The testing set is empty. 
+\item Test the model you just built on the {\it training} set
+\item This approach cannot be recommended under any circumstance.
+\item Analogy: Assess the fit of the linear model by plotting the
+      fitted (from the data) to the observed data.
+\item A bona-fide testing set is required.
+\item Will demonstrate how this can lead to noise discovery
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Hold-out Method}
+  \begin{itemize}
+\item Split the data into two parts
+\item Keep the testing set locked up
+\item Better yet, ask an "honest" broker to keep it from you until
+      you are ready to test the model
+\item This approach is reasonable if you have a large number of cases
+\item It may be problematic if the outcomes are sparse
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{$k$-fold Cross-Validation}
+  \begin{itemize}
+\item Many microarray experiments are from smaller (e.g., pilot)
+      studies
+\item It is not impossible to get reasonably size training and testing
+      sets this cases 
+\item A reasonable approach to get around this is $k$-fold cross-validation (CV)
+\item Randomly split cases into $k$ (nearly) equally sized subsets (folds).
+\item At each step take of these $k$ portions as the {\it testing} set and 
+      construct the {\it training} set based on the other $k-1$ portions
+\item Special case is Leave-One-Out CV (LOOCV) where $k=n$
+\item For really small data sets, LOOCV is often the best (most practical) choice.
+ \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Naive Cross-Validation}
+  \begin{itemize}
+\item  Naive Validation: Do the feature selection once based on all $n$ cases
+\item In each CV step use the same set of features.
+\item This will invariably make the results look better than
+      they really are
+\item It should be avoided unless one feels {\it very} certain about the features
+      (say biologically relevant gathered      {\it a priori}
+\end{itemize}
+
+\end{frame}
+\begin{frame}
+  \frametitle{Proper Cross-Validation}
+  \begin{itemize}
+\item Choose the first fold and set it aside the other $k-1$ folds
+\item Carry out Feature Selection on the other $k-1$ folds
+\item Train the model based the top features on the $k-1$ folds
+\item Test the model on the first fold left out
+\item Repeat the above for the second fold (set aside the second fold,
+ leave in the first and the
+next $k-2$ folds).
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Important Illustration (Fig 8.5) from Simon et al.}
+  \setkeys{Gin}{width=0.6\textwidth}
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.45,angle=178]{Figures/simon-cv.png}
+  \end{figure}
+\end{frame}
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Simulate Data for $k$-NN Prediction}
+  \footnotesize
+  \begin{itemize}
+  \item Simulate expression from 1000 genes for 
+        40 patients. Let the first 20 be responders
+        and the remaining 20 be non-responders
+<<>>=
+set.seed(123)
+n=20
+m=1000
+EXPRS=matrix(rnorm(2*n*m),2*n,m)
+rownames(EXPRS)=paste("pt",1:(2*n),sep="")
+colnames(EXPRS)=paste("g",1:m,sep="")
+grp=rep(0:1,c(n,n))
+@ 
+\item Pick the top 10 features based on the 
+  two-sample $t$-test
+<<>>=
+library(genefilter)
+stats=abs(rowttests(t(EXPRS), factor(grp))$statistic)
+ii=order(-stats)
+@ 
+\item Filter out all genes except the top 10
+<<>>=
+TOPEXPRS=EXPRS[, ii[1:10]]
+@ 
+  \end{itemize}
+  
+  
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Error Resubstitution and Naive CV}
+  \footnotesize
+  \begin{itemize}
+\item Error resubstitution (Training and Testing set are the same)
+<<>>=
+mod0=knn(train=TOPEXPRS,test=TOPEXPRS,cl=grp,k=3)
+table(mod0,grp)
+@ 
+\item Cross-validated predictions (the features selection
+      is not part of the CV process)
+<<>>=
+mod1=knn.cv(TOPEXPRS,grp,k=3)
+table(mod1,grp)
+@ 
+\item Note that in both examples, {\tt TOPEXPR} not {\tt EXPR}
+  is used.
+\end{itemize}
+  
+  
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{{\tt R} Function to Implement Proper CV based on $k$-NN}
+\tiny
+<<knnfs>>=
+top.features=function(EXP,resp,test,fsnum)
+  {
+    top.features.i=function(i,EXP,resp,test,fsnum)
+      {
+        stats=abs(mt.teststat(EXP[,-i],resp[-i],test=test))
+        ii=order(-stats)[1:fsnum]
+        rownames(EXP)[ii]
+      }
+    sapply(1:ncol(EXP),top.features.i,EXP=EXP,resp=resp,test=test,fsnum=fsnum)
+  }
+
+
+# This function evaluates the knn
+
+knn.loocv=function(EXP,resp,test,k,fsnum,tabulate=FALSE,permute=FALSE)
+  {
+    if(permute)
+      resp=sample(resp)
+    topfeat=top.features(EXP,resp,test,fsnum)
+    pids=rownames(EXP)
+    EXP=t(EXP)
+    colnames(EXP)=as.character(pids)
+    knn.loocv.i=function(i,EXP,resp,k,topfeat)
+      {
+        ii=topfeat[,i]
+        mod=knn(train=EXP[-i,ii],test=EXP[i,ii],cl=resp[-i],k=k)[1]
+      }
+    out=sapply(1:nrow(EXP),knn.loocv.i,EXP=EXP,resp=resp,k=k,topfeat=topfeat)
+    if(tabulate)
+      out=ftable(pred=out,obs=resp)
+    return(out)
+  }
+
+@ 
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Proper Cross-Validation}
+  \footnotesize
+  \begin{itemize}
+  \item Finally, we conduct proper cross-validation using the 
+        previous {\tt R} function
+  \item At each iteration, the top 10 features are selected
+        based on the data from the $n-1$ samples in the training set
+<<properCV>>=
+knn.loocv(t(EXPRS),as.integer(grp),"t.equalvar",3,10,TRUE)
+@ 
+\item Note that {\tt EXPRS} not {\tt TOPEXPR} is used.
+\item The classification rate is 50\% (as expected)
+\end{itemize}
+  
+\end{frame}
+
+
+\begin{frame}{Naive LOOCV: Quantitative trait}
+  \begin{itemize}
+  \item Repeat the last experiment with a noisy quantitative outcome
+  \item First simulate a data matrix of dimension $n=50$ (patients) and $m$ (genes)
+  \item Next draw the outcome for $n=50$ patients from a standard
+        normal distribution independent of the data matrix
+  \item There is no relationship between the expressions and the outcome (by design)
+  \item We consider $m=45$ and $m=50000$
+  \item We conduct Naive LOOCV using the top 10 features 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Naive LOOCV: Quantitative trait}
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.65]{Figures/lm-overfit.pdf}
+  \end{figure}
+Figure taken from Owzar {\it et al}; {\it Clin Transl Sci} 2011. 
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Training, Validation and Testing Approach}
+  \begin{itemize}
+  \item Before you test the model, you must freeze it
+  \item You may want to split the Training set further into
+        a Training and Validation set
+  \item Use the Validation set to "tune" the model.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Final Remarks}
+  \begin{itemize}
+  \item It is OK to try different methods (other classifiers, feature selection or tuning methods)
+  \item Keep track of what you have done and report it (brief description in the paper and details in 
+        supplementary material)
+  \item Be careful if you have too few responders
+  \item You could have a model that will classify most patients as a non-responder.
+  \item In this case a 00 ($Y=0$ and $g(X)=0$) may not be bona-fide true-negative
+  \item The gold-standard for model validation, is to follow up the cross-validatiion by permutation resampling
+    \item The {\tt R} function provided can be used for this purpose
+\end{itemize}
+\end{frame}
+
+
+
+%% \begin{frame}
+%%   \frametitle{Pre-processing Challenge}
+%%   \begin{itemize}
+%%   \item The expressions from the testing set need to be "compatible" to those used to
+%%         train the model
+%%   \item In classical experiments with a few biomarkers, the labs had internal controls
+%%         to ensure that the measurements were properly normalized
+%%   \item This is very complicated in microarray experiments (it is hard enough to do this for a single batch let alone for two batches)
+%%   \item If the model is used to stratify patients into a clinical study, then one has to be extra careful (due to ethical issues)
+%%   \item This problem has (our opinion) not been addressed appropriately 
+%%          in the literature.
+%%   \item Microarray assays provide {\it relative} not {\tt absolute} expressions
+%%   \end{itemize}
+%% \end{frame}
+%% \begin{frame}
+%%   \frametitle{Director's Challenge Lung Cancer Data (Shedden et al)}
+%% \setkeys{Gin}{width=0.7\textwidth}
+
+%%   \begin{figure}
+%%    \centering
+%%    \includegraphics[scale=0.5]{Figures/dchallenge-batch.png}
+%%  \end{figure}
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{On Data and Answers}
+%% "The data may not contain the answer. The combination of 
+%% some data and an aching desire for an answer does not ensure 
+%% that a reasonable answer can be extracted from a given body of data."
+%% \vskip 0.5in
+%% John Wilder Tukey
+
+%% \end{frame}

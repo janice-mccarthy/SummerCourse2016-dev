@@ -1,0 +1,15 @@
+\begin{center}
+    \begin{tikzpicture}
+        \node (start){};
+        \node (LV)   [right of=start][node distance= 1cm][pin={[pointing]below:start cycle}]  {};
+        \node (LVpin)[below of=LV][node distance= 1cm][pin={[pointing]below:No AE}] {};
+        \node (X)    [right of=start][node distance= 4cm][cross][pin={[pointing]below:AE (grade/attr)}] {};
+        \node (CV)   [right of=start][node distance= 9cm][pin={[pointing]below:end cycle}] {};
+        \node (end)  [right of=start][node distance=10cm] {};
+        \draw[-|] (start.center) -- (LV.center);
+        \draw[-]  (LV.center) -- (X.center);
+        \draw[-]  (X.center) -- (CV.center);
+        \draw[|-] (CV.center) -- (end.center);
+    \end{tikzpicture}
+\end{center}
+

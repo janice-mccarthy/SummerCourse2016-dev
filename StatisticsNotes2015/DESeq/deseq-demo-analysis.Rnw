@@ -1,0 +1,78 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  This Beamer template was created by Cameron Bracken.
+%%  Anyone can freely use or modify it for any purpose
+%%  without attribution.
+%%
+%%  Last Modified: January 9, 2009
+%%
+
+\documentclass[xcolor=x11names,compress]{beamer}
+\begin{document}
+\begin{frame}[fragile]{Load Packages}
+  \begin{itemize}
+  \item Load Packages
+<<pkg>>=
+library(DESeq2)
+library(knitr)
+@
+\item Import Sample Table
+<<countmatrix>>=
+pfile="../Data/sampletable.txt"
+tools::md5sum(pfile)
+pdat=read.table(pfile,sep=",")
+names(pdat)=c("fname","sname","trt")
+pdat=pdat[,c(2,1,3)]
+@ 
+\item Maniulate the sample table: The first column has to be the sample name;
+  also convert the condition to factor
+<<>>=
+names(pdat)=c("fname","sname","trt")
+pdat=pdat[,c(2,1,3)]
+pdat[["trt"]]=as.factor(pdat[["trt"]])
+@   
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{Convert Count Matrix to Class}
+<<convert>>=
+ds=DESeqDataSetFromHTSeqCount(pdat,directory="../Data/",design=~trt)
+@ 
+\item Note class for object {\tt ds}
+<<>>=
+class(ds)
+@ 
+\end{frame}
+
+\begin{frame}[fragile]{Calculate "Expressions"}
+  \begin{itemize}
+  \item FPKM
+<<>>=
+FPKM=fpkm(ds)
+dim(FPKM)
+@ 
+\item Get counts as matrix
+<<>>=
+cnts=counts(ds)
+class(cnts)
+dim(cnts)
+@ 
+\item Get FPM/CPM 
+<<>>=
+FPM=fpm(ds)
+dim(FPM)
+@ 
+  \end{itemize}
+\end{frame}
+
+\end{document}
+rlogds=rlog(ds)
+class(rlogds)
+
+FPM=fpm(ds)
+dim(FPM)
+rlogds=rlog(ds)
+class(rlogds)
+cds=estimateSizeFactors(ds)
+cds=estimateDispersions(cds)

@@ -1,0 +1,36 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  This Beamer template was created by Cameron Bracken.
+%%  Anyone can freely use or modify it for any purpose
+%%  without attribution.
+%%
+%%  Last Modified: January 9, 2009
+%%
+
+\documentclass[xcolor=x11names,compress]{beamer}
+\begin{document}
+\begin{frame}[fragile]{Exercise}
+<<>>=
+library(psych)
+data(cities)
+ii=c(3,4,5,6)
+cities[ii,ii]
+@ 
+\end{frame}
+
+
+\begin{frame}
+<<echo=FALSE>>=
+plot(hclust(as.dist(cities[ii,ii]),method="complete"))
+@   
+\end{frame}
+
+
+\begin{frame}
+<<echo=FALSE>>=
+plot(hclust(as.dist(cities[ii,ii]),method="single"))
+@   
+\end{frame}
+
+\end{document}
+
+

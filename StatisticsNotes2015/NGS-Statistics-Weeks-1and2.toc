@@ -1,0 +1,11 @@
+\beamer@endinputifotherversion {3.24pt}
+\beamer@sectionintoc {1}{Introduction}{3}{0}{1}
+\beamer@sectionintoc {2}{Elements of Statistical Inference}{9}{0}{2}
+\beamer@sectionintoc {3}{Model Building Illustration}{59}{0}{3}
+\beamer@sectionintoc {4}{Elements of Supervised Learning}{79}{0}{4}
+\beamer@sectionintoc {5}{Elements of Unsupervised Learning}{129}{0}{5}
+\beamer@sectionintoc {6}{Elements of Multiple Testing}{180}{0}{6}
+\beamer@sectionintoc {7}{Distributions for Counts}{201}{0}{7}
+\beamer@sectionintoc {8}{Logistic Regression}{227}{0}{8}
+\beamer@sectionintoc {9}{Negative Binomial GLM for RNA-Seq}{241}{0}{9}
+\beamer@sectionintoc {10}{Interaction versus Additive Effects}{264}{0}{10}

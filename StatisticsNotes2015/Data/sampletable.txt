@@ -1,0 +1,6 @@
+AGTCAA_counts.tsv,AGTCAA,0
+AGTTCC_counts.tsv,AGTTCC,0
+ATGTCA_counts.tsv,ATGTCA,0
+CCGTCC_counts.tsv,CCGTCC,1
+GTCCGC_counts.tsv,GTCCGC,1
+GTGAAA_counts.tsv,GTGAAA,1

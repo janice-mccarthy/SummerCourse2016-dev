@@ -1,0 +1,179 @@
+%PDF-1.4
+%Å‚Å„ÅœÅ”\r
+1 0 obj
+<<
+/CreationDate (D:20091015001804)
+/ModDate (D:20091015001804)
+/Title (R Graphics Output)
+/Producer (R 2.9.2)
+/Creator (R)
+>>
+endobj
+2 0 obj
+<<
+/Type /Catalog
+/Pages 3 0 R
+>>
+endobj
+5 0 obj
+<<
+/Type /Page
+/Parent 3 0 R
+/Contents 6 0 R
+/Resources 4 0 R
+>>
+endobj
+6 0 obj
+<<
+/Length 7 0 R
+>>
+stream
+q
+1.000 1.000 1.000 rg
+0 0 504.00 504.00 re f
+Q q
+BT
+0.000 0.000 0.000 rg
+/F2 1 Tf 0.00 12.00 -12.00 0.00 76.98 366.24 Tm (ORD) Tj
+ET
+BT
+/F2 1 Tf 0.00 12.00 -12.00 0.00 204.98 309.29 Tm [(A) 120 (TL)] TJ
+ET
+BT
+/F2 1 Tf 0.00 12.00 -12.00 0.00 332.98 84.58 Tm (BOS) Tj
+ET
+BT
+/F2 1 Tf 0.00 12.00 -12.00 0.00 460.98 84.59 Tm (DCA) Tj
+ET
+0.000 0.000 0.000 RG
+0.75 w
+[] 0 d
+1 J
+1 j
+10.00 M
+330.40 119.92 m
+330.40 148.22 l
+458.40 148.22 l
+458.40 119.92 l
+S
+202.40 339.85 m
+202.40 368.15 l
+394.40 368.15 l
+394.40 148.22 l
+S
+74.40 402.90 m
+74.40 431.20 l
+298.40 431.20 l
+298.40 368.15 l
+S
+Q q
+0.000 0.000 0.000 RG
+0.75 w
+[] 0 d
+1 J
+1 j
+10.00 M
+59.04 86.64 m 59.04 444.96 l S
+59.04 86.64 m 51.84 86.64 l S
+59.04 159.95 m 51.84 159.95 l S
+59.04 233.26 m 51.84 233.26 l S
+59.04 306.57 m 51.84 306.57 l S
+59.04 379.88 m 51.84 379.88 l S
+BT
+0.000 0.000 0.000 rg
+/F2 1 Tf 0.00 12.00 -12.00 0.00 41.76 76.63 Tm (350) Tj
+ET
+BT
+/F2 1 Tf 0.00 12.00 -12.00 0.00 41.76 149.94 Tm (400) Tj
+ET
+BT
+/F2 1 Tf 0.00 12.00 -12.00 0.00 41.76 223.25 Tm (450) Tj
+ET
+BT
+/F2 1 Tf 0.00 12.00 -12.00 0.00 41.76 296.56 Tm (500) Tj
+ET
+BT
+/F2 1 Tf 0.00 12.00 -12.00 0.00 41.76 369.87 Tm (550) Tj
+ET
+Q q
+BT
+0.000 0.000 0.000 rg
+/F3 1 Tf 14.00 0.00 -0.00 14.00 198.86 469.45 Tm [(Cluster Dendr) 20 (ogram)] TJ
+ET
+BT
+/F2 1 Tf 12.00 0.00 -0.00 12.00 219.46 4.32 Tm (hclust \(*, "single"\)) Tj
+ET
+BT
+/F2 1 Tf 12.00 0.00 -0.00 12.00 208.13 18.72 Tm [(as) 15 (.dist\(cities[1:4, 1:4]\))] TJ
+ET
+BT
+/F2 1 Tf 0.00 12.00 -12.00 0.00 12.96 241.86 Tm (Height) Tj
+ET
+Q
+endstream
+endobj
+7 0 obj
+1515
+endobj
+3 0 obj
+<<
+/Type /Pages
+/Kids [
+5 0 R
+]
+/Count 1
+/MediaBox [0 0 504 504]
+>>
+endobj
+4 0 obj
+<<
+/ProcSet [/PDF /Text]
+/Font <</F2 9 0 R /F3 10 0 R >>
+/ExtGState << >>
+>>
+endobj
+8 0 obj
+<<
+/Type /Encoding
+/BaseEncoding /WinAnsiEncoding
+/Differences [ 45/minus 96/quoteleft
+144/dotlessi /grave /acute /circumflex /tilde /macron /breve /dotaccent
+/dieresis /.notdef /ring /cedilla /.notdef /hungarumlaut /ogonek /caron /space]
+>>
+endobj
+9 0 obj <<
+/Type /Font
+/Subtype /Type1
+/Name /F2
+/BaseFont /Helvetica
+/Encoding 8 0 R
+>> endobj
+10 0 obj <<
+/Type /Font
+/Subtype /Type1
+/Name /F3
+/BaseFont /Helvetica-Bold
+/Encoding 8 0 R
+>> endobj
+xref
+0 11
+0000000000 65535 f 
+0000000021 00000 n 
+0000000163 00000 n 
+0000001880 00000 n 
+0000001963 00000 n 
+0000000212 00000 n 
+0000000292 00000 n 
+0000001860 00000 n 
+0000002055 00000 n 
+0000002312 00000 n 
+0000002408 00000 n 
+trailer
+<<
+/Size 11
+/Info 1 0 R
+/Root 2 0 R
+>>
+startxref
+2510
+%%EOF

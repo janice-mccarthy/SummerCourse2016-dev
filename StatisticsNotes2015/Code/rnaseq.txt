@@ -1,0 +1,92 @@
+### A. Prep Annotation Files (this section is done only once and can be reused for any analysis
+# needing this reference
+
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000010245.2_ASM1024v1/GCF_000010245.2_ASM1024v1_genomic.gff.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF_000010245.2_ASM1024v1/GCF_000010245.2_ASM1024v1_genomic.fna.gz
+
+# Copy to an Annotation directory and gunzip
+
+# Build Index
+bowtie2-build GCF_000010245.2_ASM1024v1_genomic.fna ASM1024v1
+
+
+
+### B. Set directories for the analyses 
+annodir=/data1/Annotation/Ensembl/ecoli/ASM1024v1/
+
+#annodir=/home/bitnami/scratch/dryrun/Anno/
+
+
+anno=${annodir}ASM1024v1
+gtf=${annodir}GCF_000010245.2_ASM1024v1_genomic.gff
+
+# This is where temporary files will be stored
+tmpdir=/tmp
+
+# Root directory for the reads
+
+fastqdir=/data1/NGS/BBSummerCourse2015/Reads/
+#fastqdir=/home/bitnami/scratch/dryrun/Reads/
+# Project output directory
+
+projdir=/home/owzar001/Projects/NGS/
+#projdir=/home/bitnami/Projects/dryrun/
+
+### C. analyze one paired sample
+
+f1=${fastqdir}r1.AGTCAA.fastq.gz
+f2=${fastqdir}r2.AGTCAA.fastq.gz
+
+outdir=${projdir}AGTCAA
+bam=${projdir}AGTCAA/accepted_hits.bam
+
+
+# This steps aligns the raw reads to the reference genome
+
+
+time tophat \
+--num-threads 10 \
+--mate-inner-dist 50 \
+--mate-std-dev 20 \
+--no-coverage-search \
+--transcriptome-max-hits 1 \
+--max-multihits 1 \
+--min-intron-length 50 \
+--max-intron-length 4000 \
+--library-type fr-firststrand \
+--no-novel-juncs \
+--GTF $gtf \
+--output-dir $outdir \
+$anno $f1 $f1
+
+# This steps counts the number of hits in the bam file
+# from the tophat step
+
+
+time venv/bin/htseq-count \
+--mode=union \
+--minaqual=10 \
+--format=bam \
+--stranded=reverse \
+--type=gene \
+--idattr=Dbxref \
+$bam $gtf
+
+
+> my.AGTCAA-counts.tsv
+9083 GFF lines processed.
+time tophat \
+--output-dir $outdir \
+$anno $f1 $f1
+
+
+time tophat \
+--num-threads 10 \
+--no-coverage-search \
+--transcriptome-max-hits 1 \
+--max-multihits 1 \
+--library-type fr-firststrand \
+--no-novel-juncs \
+--GTF $gtf \
+--output-dir $outdir \
+$anno $f1 $f1

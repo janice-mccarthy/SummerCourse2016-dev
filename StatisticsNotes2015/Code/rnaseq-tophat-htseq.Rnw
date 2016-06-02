@@ -1,0 +1,238 @@
+\documentclass[xcolor=x11names,compress]{beamer}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{4 on 1}[letterpaper,border shrink=5mm]
+%\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage{caption}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+%\setbeamersize{text margin left=3pt,text margin right=3pt}
+
+\begin{document}
+<<setup, include=FALSE>>=
+set.seed(122333)
+options(width = 75)
+par(las=1,mar=c(4,4,.1,.1))
+library(knitr)
+library(lattice)
+library(nlme)
+library(foreach)
+library(doParallel)
+opts_chunk$set(fig.path='figure/beamer-',fig.align='center',fig.show='hold',size='tiny',fig.width=7, fig.height=7,out.width='.6\\linewidth')
+@ 
+
+
+
+\section{Prep}{Preparation Steps}
+
+
+
+\begin{frame}[fragile]{Program Version}
+Check program versions 
+  \begin{itemize}
+  \item tophat program
+<<tophat>>=
+tophat="tophat"
+system2(tophat,"-v",stdout=TRUE)
+@   
+\item bowtie2
+<<bowtie2>>=
+bowtie2="bowtie2"
+system2(bowtie2,"--version",stdout=TRUE)
+@ 
+\item htseq-count
+<<htseqcnt>>=
+htseqcnt="/home/owzar001/venv/bin/htseq-count"
+system2(htseqcnt,"| tail -n 3",stdout=TRUE)
+@ 
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Set Annotation Files}
+Here we set annotation directories and files
+<<>>=
+annodir="/data1/Annotation/Ensembl/ecoli/ASM1024v1/"
+gtf=file.path(annodir,"GCF_000010245.2_ASM1024v1_genomic.gff")
+fastindex=file.path(annodir,"ASM1024v1")
+annofile=file.path(annodir,"GCF_000010245.2_ASM1024v1_genomic.fna")
+@   
+It is assumed that the FASTA reference file has already
+been indexed using {\tt bowtiebuild}.
+<<echo=FALSE>>=
+fname=c(list.files(annodir,pattern="bt2"),basename(gtf))
+ffname=c(list.files(annodir,pattern="bt2",full.names=TRUE),gtf)
+md5sum=as.character(tools::md5sum(ffname))
+kable(data.frame(fname,md5sum))
+@ 
+\end{frame}
+
+\begin{frame}[fragile]{Assign Read Files}
+Read in the phenotype data file. At the minimum, it must contain
+the following three columns: {\tt f1, f2} and {\tt sampid} corresponding
+to the two paired fasta files and a sample id. 
+<<>>=
+phfile="NGS-phdata.csv"
+tools::md5sum(phfile)
+phdat=read.csv(phfile)
+@   
+
+\end{frame}
+
+\begin{frame}[fragile]{Sample Data}
+Location of the read files (This needs to be modified if
+files are located in different directories)
+<<>>=
+fastqdir="/data1/NGS/BBSummerCourse2015/Reads/"
+@ 
+<<echo=FALSE>>=
+kable(data.frame(phdat,
+                 m1=tools::md5sum(file.path(fastqdir,phdat[["f1"]])),
+                 m2=tools::md5sum(file.path(fastqdir,phdat[["f2"]])),
+                 row.names=NULL))
+@  
+\end{frame}
+
+\begin{frame}[fragile]{Output Directory}
+<<>>=
+projdir="/tmp/NGS4/"
+@  
+\end{frame}
+
+
+\begin{frame}[fragile]{Tophat Flags}
+Here we set the flags for tophat. 
+<<th0>>=
+th0<-paste("--num-threads 4",
+           "--mate-inner-dist 50",
+           "--mate-std-dev 20",
+           "--no-coverage-search",
+           "--transcriptome-max-hits 1",
+           "--max-multihits 1",
+           "--min-intron-length 50",
+           "--max-intron-length 4000",
+           "--library-type fr-firststrand",
+           "--no-novel-juncs",
+           "--GTF",gtf)
+@   
+\end{frame}
+\begin{frame}[fragile]{htseq-count flags}
+<<>>=
+ht0<-paste("--format=bam",
+           "--order=pos",
+           "--mode=union",
+           "--minaqual=10",
+           "--stranded=reverse",
+           "--type=gene",
+           "--idattr=Dbxref")
+@   
+\end{frame}
+
+\begin{frame}[fragile]{Putting it all together}
+<<spar>>=
+spar<-list(tophat=tophat,bowtie2=bowtie2,htseqcnt=htseqcnt,
+           tophatcores=4,htseqcores=6,
+           th0=th0,ht0=ht0,
+           tophatdir="tophat",tophatbam="accepted_hits.bam",
+           htseqdir="htseqcnt",
+           annofile=annofile,fastindex=fastindex,gtf=gtf,projdir=projdir)
+                                  
+@   
+\end{frame}
+\section{Wrapper Function}
+\begin{frame}[fragile]{Tophat Wrapper Functions}
+<<>>=
+tophatfun=function(f1,f2,sampid,fout,ferr,spar,logdirlab="logouterr")
+    {
+        ### Set and create output directory projdir/sampid/tophat
+        outdir=file.path(spar[["projdir"]],sampid,spar[["tophatdir"]])
+        dir.create(outdir)
+        ### Create directory for stdout and stderr
+        ### projdir/sampid/tophat/logdirlab
+        logdir=file.path(outdir,logdirlab)
+        dir.create(logdir)
+        ### Create stdout and stderr files names
+        ferr=file.path(logdir,ferr)
+        fout=file.path(logdir,fout)
+        ### Run tophat
+        myargs=paste(spar[["th0"]],"--output-dir",outdir,spar[["fastindex"]],f1,f2)
+        system2(spar["tophat"],myargs,stdout=fout,stderr=ferr)
+        return(invisible(NULL)) 
+    }
+@   
+\end{frame}
+
+
+\begin{frame}[fragile]{HTSeq-count Wrapper Functions}
+<<>>=
+htseqcountfun=function(bamfile,sampid,ferr,spar,logdirlab="logouterr",cntext="-htseq-count.tsv")
+    {
+        ### Set and create output directory projdir/sampid/htseqcount
+        outdir=file.path(spar[["projdir"]],sampid,spar[["htseqdir"]])
+        dir.create(outdir)
+        ### Set countfile name
+        cntfile=file.path(outdir,paste(sampid,cntext,sep=""))
+        ### Create directory for stdout and stderr
+        ### projdir/sampid/tophat/logdirlab   
+        logdir=file.path(outdir,logdirlab)
+        dir.create(logdir)
+        ### Create stderr files name (the count file will be piped to stdout)
+        ferr=file.path(logdir,ferr)
+        ### Get the counts using htseq-count. 
+        myargs=paste(spar[["ht0"]],bamfile,spar[["gtf"]])
+        system2(spar["htseqcnt"],myargs,stdout=cntfile,stderr=ferr)
+        return(invisible(NULL)) 
+    }
+@   
+\end{frame}
+
+
+\section{Process}{Process Data}
+\begin{frame}[fragile]{Create Project and Sample Directories}
+<<>>=
+dir.create(spar[["projdir"]])
+@    
+<<>>=
+out=foreach(i=1:nrow(phdat))%dopar%{
+    sampdir=file.path(spar[["projdir"]],phdat[["sampid"]][i])
+    dir.create(sampdir)}
+@   
+\end{frame}
+
+
+\begin{frame}[fragile]{Alignment Step}
+<<>>=
+cl=makeForkCluster(spar[["tophatcores"]])
+registerDoParallel(cl)
+foreach(i=1:nrow(phdat))%dopar%{
+    f1=file.path(fastqdir,phdat[["f1"]][i])
+    f2=file.path(fastqdir,phdat[["f2"]][i])
+    sampid=phdat[["sampid"]][i]
+    tophatfun(f1,f2,sampid,spar,
+              fout="tophat.stdout",ferr="tophat.stderr")}
+stopCluster(cl)
+@ 
+\end{frame}
+\section{Count}{Count Step}
+\begin{frame}[fragile]{Count Using ht-seq}
+<<htseq>>=
+cl=makeForkCluster(spar[["htseqcores"]])
+registerDoParallel(cl)
+foreach(i=1:nrow(phdat))%dopar%{
+    sampid=phdat[["sampid"]][i]
+    bamfile=file.path(projdir,sampid,spar[["tophatdir"]],spar[["tophatbam"]])
+    htseqcountfun(bamfile,sampid,"tophat.stderr",spar)}
+stopCluster(cl)
+@
+\end{frame}
+\end{document}
+
+%% dd=data.frame(fastq=list.files("/data1/NGS/BBSummerCourse2015/Reads/",pattern="fastq.gz"),stringsAsFactors=FALSE)
+%% dd=data.frame(dd,sampid=substr(dd$fastq,4,9),r=substr(dd$fastq,1,2),stringsAsFactors=FALSE)
+%% dd=merge(subset(dd,r=="r1"),subset(dd,r=="r2"),by="sampid")
+%% dd=data.frame(sampid=dd[["sampid"]],f1=dd[["fastq.x"]],f2=dd[["fastq.y"]])
+%% write.csv(dd,"NGS-phdata,csv",quote=FALSE)
+
+

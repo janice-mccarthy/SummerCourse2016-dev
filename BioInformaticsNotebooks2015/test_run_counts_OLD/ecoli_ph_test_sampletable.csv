@@ -1,0 +1,7 @@
+sampleName,index,pH,replicate,fileName
+7A,AGTCAA,7,A,AGTCAA_counts.tsv
+7B,AGTTCC,7,B,AGTTCC_counts.tsv
+7C,ATGTCA,7,C,ATGTCA_counts.tsv
+8A,CCGTCC,8,A,CCGTCC_counts.tsv
+8B,GTCCGC,8,B,GTCCGC_counts.tsv
+8C,GTGAAA,8,C,GTGAAA_counts.tsv

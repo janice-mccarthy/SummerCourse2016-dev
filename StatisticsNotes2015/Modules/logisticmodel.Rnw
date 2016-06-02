@@ -1,0 +1,222 @@
+
+
+\begin{frame}{Linear Regression Example: Gene Expression}
+  \begin{itemize}
+  \item Consider the simple linear regression model
+    \begin{equation*}
+      Y=\beta_0+\beta_1 x + \epsilon,
+    \end{equation*}
+  where 
+  \begin{itemize}
+  \item   $x=0$ (untreated)
+    \item or $x=1$ (treated)
+  \end{itemize}
+\item $Y$ is the observed "expression" of the gene
+ \item $\epsilon$ is the measurement noise term
+ \item We assume that it follows a normal distribution  with mean 0
+       and variance $\sigma^2$
+       \end{itemize}
+\end{frame}
+
+\begin{frame}{Reminder: Important Fact about Normal Distribution}
+  \begin{itemize}
+  \item Consider a normal distribution with mean 0 and standard deviation
+        $\sigma$
+  \item If the data are shifted by a constant $\mu$, then
+    \begin{enumerate}
+    \item  resulting
+        distribution remains normal
+     \item The mean of the new distribution is $\mu+0=\mu$
+  \item Its standard deviation remains unchanged
+    \end{enumerate}
+  \item The last two (but not first) property are true for any distribution
+  \item Recall $Y=\beta_0+\beta_1 x + \epsilon$
+  \item $Y$ follows a normal distribution with mean $\mu=\beta_0+\beta_1 x$ and variance $\sigma^2$
+  \item IMPORTANT: $\mu$ depends on $x$ (unless of course $\beta_1=1$)
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Linear Regression Example: Interpretation}
+  \begin{itemize}
+  \item Model
+    \begin{equation*}
+      Y=\beta_0+\beta_1 x + \epsilon,
+    \end{equation*}
+\item The goal of (mean) regression is to estimate the expected value of $Y$ given treatment status
+  \item Conditional on $x=0$ (i.e., not receiving treatment), the expected value of $Y$ is
+    \begin{equation*}
+      \beta_0 + \beta_1 \times 0 =\beta_0
+    \end{equation*}
+  \item Conditional on $z=1$ (i.e., receiving treatment), the expected value of $Y$ is
+    \begin{equation*}
+      \beta_0 + \beta_1 \times 1 =\beta_0+\beta_1
+    \end{equation*}
+    \end{itemize}
+    
+\end{frame}
+\begin{frame}{Linear Regression Example: Interpretation}
+  \begin{itemize}
+  \item Model
+    \begin{equation*}
+      Y=\beta_0+\beta_1 x + \epsilon,
+    \end{equation*}
+\item $\beta_0$ (the intercept) is the expected value of $Y$ if no treatment is administered (average baseline value)
+\item $\beta_1$ is the treatment effect
+\item If treatment is administered, the expected value of expression is 
+  \begin{itemize}
+  \item increased by $\beta_1$ units if $\beta_1>0$
+  \item decreased by $\beta_1$ units if $\beta_1<0$
+  \item unchanged if $\beta_1=0$
+  \end{itemize}
+    \end{itemize}
+    
+\end{frame}
+
+
+\begin{frame}{Regression for Binary Outcomes}
+  \begin{itemize}
+  \item Suppose that $Y$ is a binary outcome
+  \item It assumes values 0 or 1
+  \item Consider the previous model
+    \begin{equation*}
+      Y=\beta_0+\beta_1 x + \epsilon,
+    \end{equation*}
+  \item Is it appropriate? Why or why not?
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Logistic Regression}
+  \begin{itemize}
+  \item Relate the probability of the outcome of the event $Y=1$ to treatment
+  \item More specifically, relate the log-odds to the treatment
+  \item The log-odds will be modeled as a linear function of $x$
+    \begin{equation*}
+      \beta_0+\beta_1 x + \epsilon
+    \end{equation*}
+  \item This is an example of a generalized linear model
+  \item The expected outcome of $Y$ is not modeled directly as a linear function
+  \item A transformation of the expected outcome of $Y$ is modeled as a linear function
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Expected value of a binary event}
+  \begin{itemize}
+  \item Suppose that $Y$ assumes 1 with probability $\pi$ or 0 with probability $1-\pi$
+  \item $P(Y=1)=\pi$ and $P(Y=0)=1-\pi$
+  \item IMPORTANT: $P(Y=1)=E(Y)$
+  \item The expected value of $Y$ is the probability that it assumes the value 1
+  \item Why?
+  \end{itemize}
+\end{frame}
+
+%% \begin{frame}{Regression}
+%%   \begin{itemize}
+%%   \item Instead of relating the eve
+%%   \end{itemize}
+%% \end{frame}
+%% \begin{frame}{The expit function}
+%% <<echo=FALSE>>=
+%% pp=seq(-30,30,length=1000)
+%% plot(pp,exp(pp)/(1+exp(pp)),type="l")
+%% @ 
+%% \end{frame}
+
+\begin{frame}{Odds vs Probability}
+  \begin{itemize}
+  \item Suppose that $\pi=P(Y=1)$
+  \item The odds of the event $Y=1$ (to occur) is defined as
+    \begin{equation*}
+      \mathrm{Odds}[Y=1]=
+      \frac{\mbox{Probability that $Y=1$ occurs}}{\mbox{Probability that $Y=1$ does not occur}}=
+        \frac{\pi}{1-\pi}
+    \end{equation*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Odds Ratio Versus Relative Risk}
+  \begin{itemize}
+  \item $\pi_0=P[Y=1|X=0]$: Probability that the event occurs if
+        sample is not treated
+   \item $\pi_1=P[Y=1|X=1]$: Probability that the event occurs if
+        $X=1$sample is treated
+   \item The odds-ratio is 
+     \begin{equation*}
+       \mathrm{OR} = \frac{\frac{\pi_1}{1-\pi_1}}{\frac{\pi_0}{1-\pi_0}}
+     \end{equation*}
+   \item The relative risk is 
+     \begin{equation*}
+       \mathrm{RR} = \frac{\pi_1}{\pi_0}
+     \end{equation*}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{The Logistic Model}
+  \begin{itemize}
+  \item The log-odds of the event $Y=1$ 
+    \begin{equation*}
+      \log \frac{P(Y=1|X=x)}{1-P(Y=1|X=x)} = \beta_0+\beta_1 x
+    \end{equation*}
+  \item or equivalently
+       \begin{equation*}
+      \log \frac{E(Y|X=x)}{1-E(Y|X=x)} = \beta_0+\beta_1 x
+    \end{equation*}
+    \item Recall that in the simple linear regression case, we assumed that
+      \begin{equation*}
+        E[Y|X=x]= \beta_0+\beta_1 x
+      \end{equation*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Link Function}
+  \begin{itemize}
+  \item For a probability $\pi$, define the "logit" transformation as
+    \begin{equation*}
+      \log \frac{\pi}{1-\pi}
+    \end{equation*}
+  \item This is the log-odds of an event with probability $\pi$
+  \item Note that in the logistic model, the probability of the event is linear in the parameter through this
+       logit transformation
+         \begin{equation*}
+      \log \frac{\pi}{1-\pi}= \beta_0+\beta_1 x
+    \end{equation*}
+  \item In the GLM literature, this is called the link function
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Overdispersion}
+  \begin{itemize}
+  \item Recall that if $K$ follows a binomial distribution with parameters $n$ and $\pi$, then
+    \begin{itemize}
+    \item mean $\mu=n\pi$
+    \item variance $\sigma^2=n\pi(1-\pi)$
+    \end{itemize}
+  \item Clustering in the data results in the actual variance to be different than the nominal variance ($n\pi(1-\pi)$)
+    \begin{itemize}
+    \item Overdispersion: Actual variance is larger than nominal variance
+    \item Underdispersion: Actual variance is smaller than nominal variance
+    \end{itemize}
+  \item The choice of a GLM and evaluation of its performance {\it should} start and end with considering/addressing the overdispersion issue
+    \item The use of Poisson and Negative Binomial models are two common choices for GLM for overdispersed data
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Generalized Linear Models (GLM)}
+  Define $\mu_x=E(Y|X=x)$ as the expected value of the outcome given treatment status ($x=0$ or $x=1$)  
+  \begin{table}
+    \footnotesize
+    \centering
+    \begin{tabular}{llll}\hline
+      Distribution&Support&Link&Mean\\\hline\hline
+      Binomial&$0,1,\ldots,n$&$\beta_0+\beta_1 x = \log \frac{\mu_x}{1-\mu_x}$&$\mu_x=\frac{\exp(\beta_0+\beta_1 x)}{1+\exp(\beta_0+\beta_1 x)}$\\\hline
+      Poisson&$0,1,2,\ldots$&$\beta_0+\beta_1 x=\log(\mu_x)$&$\mu_x=\exp(\beta_0+\beta_1 x)$\\\hline
+      Negative Binomial&$r,r+1,\ldots$&$\beta_0+\beta_1 x=\log(\mu_x)$&$\mu_x=\exp(\beta_0+\beta_1 x)$\\\hline
+    \end{tabular}
+  \end{table}
+\end{frame}

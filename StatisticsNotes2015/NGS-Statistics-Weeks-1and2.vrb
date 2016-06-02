@@ -1,0 +1,15 @@
+\frametitle{Maximum Likelihood Calculation for NB}
+\begin{itemize}
+  \item For gene $i$, let $k_{11},\ldots,k_{1n}$ the $n$ observed counts
+  \item For patient $j$ plug the observed count $k_{ij}$ into the PMF of
+  the NB distribution $f[k_{ij};\mu_{ij};\alpha_i]$
+  \item Write the likelihood function as a product of these $n$ terms
+    \begin{equation*}
+      L=\prod_{j=1}^n f[k_{ij};\mu_{ij};\alpha_i]=f[k_{ij};\beta_{0i}, \beta_{1i}, s_j, \alpha_i]
+    \end{equation*}
+  \item The function depends on $\beta_{0i}, \beta_{1i}, s_j$ and $\alpha_i$
+  \item One approach: Come up with some estimates of $s_j$ and $\alpha_i$ and
+    plug them into the likelihood
+  \item Pretend that these are the {\it true} values
+  \item Now the likelihood is only a function of $\beta_{0i}$ and $\beta_{1i}$
+  \end{itemize}

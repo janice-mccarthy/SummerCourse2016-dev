@@ -1,0 +1,806 @@
+\begin{frame}
+  \frametitle{Scope}
+  \begin{itemize}
+\item Often we would like to discover clusters or outliers based on the
+      gene expression profiles
+\item These are {\it unsupervised} methods in the sense that the algorithm
+      knows nothing about the outcome 
+\item It is only aware of the gene profiles
+  ($X$) and not the outcome $Y$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Fisher's Iris Data}
+<<iris1,fig=TRUE, echo=F>>=
+pairs(iris[1:4], main = "Anderson's Iris Data -- 3 species",
+pch = 21, bg = c("red", "green3", "blue")[unclass(iris$Species)])
+@   
+\end{frame}
+
+
+\begin{frame}{Fisher's Iris Data}
+<<iris2,fig=TRUE, echo=F>>=
+pairs(iris[1:4], main = "Anderson's Iris Data",
+pch = 21)
+@   
+\end{frame}
+
+
+\begin{frame}{A Self-fulfilling Prophecy}
+  \begin{itemize}
+  \item Statistical method for unsupervised learning guarantee one thing
+  \item They will return a clustering of your data
+  \item What they do not guarantee and are invariably unable to 
+        verify, is the biological relevance or reproducibility of the clustering
+  \item In light of this Self-fulfilling Prophecy, these methods should be used
+      with utmost care
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Golub {\it et al} Leukemia Data}
+  \begin{itemize}
+  \item 47 patients with acute lymphoblastic leukemia (ALL) 
+  \item 25 patients with acute myeloid leukemia (AML)
+  \item Platform: Affymetrix Hgu6800
+  \item 7129 probe sets
+  \item Golub {\it et al.} (1999). Molecular classification of cancer: class discovery and class prediction by gene expression monitoring, Science, Vol. 286:531-537.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{ Chiaretti {\it et al} ALL Data}
+  \begin{itemize}
+  \item 128 patients with acute lymphoblastic leukemia (ALL) 
+  \item Platform: Affymetrix hgu95av2
+  \item 12625 probe sets
+  \item  Chiaretti {\it et al.} 
+     Gene
+     expression profile of adult T-cell acute lymphocytic leukemia
+     identifies distinct subsets of patients with different response to
+     therapy and survival. {\it Blood}, 1 April 2004, Vol. 103, No. 7.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Methods to be Discussed}
+  \begin{itemize}
+\item There are many methods for unsupervised class 
+      discovery.
+\item We will consider three types of methods:
+  \begin{itemize}
+  \item Ordination Methods (e.g., Multi-Dimensional Scaling (MDS) and Principal Components (PC))
+  \item Hierarchical Clustering
+  \item $k$-means Clustering
+  \end{itemize}
+\item Note that there are many variations of these methods
+\item Most mathematical details will be left out
+\item We focus on discovering classes among patients (not genes)
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Distance between Two Points}
+  \begin{itemize}
+\item Many class discover methods aim to quantify the similarity
+      (or dissimilarity) among patients
+\item For each patient, the vector of gene expression can be thought
+      of a "point" in a $m$-dimensional space
+\item For many class discovery methods, one has to be able to quantify
+      the "distance" between two points (the expression profiles
+      between two individuals)
+\item A common distance measure is the Euclidean distance
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[plain]
+  \frametitle{Distance (Two points on the plane)}
+\begin{figure}
+  \centering  
+<<dist1,fig=TRUE, echo=F>>=
+par(bg="white")
+plot(0,xlim=c(-0.02,1.02),ylim=c(-0.02,1.02),axes=FALSE,type="n",xlab="",ylab="")
+points(0,0,pch=19)
+points(1,1,pch=19)
+@ 
+\end{figure}
+\end{frame}
+
+
+\begin{frame}[plain]
+  \frametitle{Distance (Coordinates)}
+
+<<dist2,fig=TRUE, echo=F>>=
+par(bg="white")
+plot(0,xlim=c(-0.02,1.02),ylim=c(-0.02,1.02),axes=FALSE,type="n",xlab="",ylab="")
+points(0,0,pch=19)
+text(0,0,"(x1,y1)",pos=1)
+points(1,1,pch=19)
+text(1,1,"(x2,y2)",pos=3)
+@ 
+
+\end{frame}
+
+
+\begin{frame}[plain]
+  \frametitle{Distance}
+
+<<dist3,fig=TRUE, echo=F>>=
+par(bg="white")
+plot(0,xlim=c(-0.02,1.02),ylim=c(-0.02,1.02),axes=FALSE,type="n",xlab="",ylab="")
+points(0,0,pch=19)
+text(0,0,"(x1,y1)",pos=1)
+points(1,1,pch=19)
+text(1,1,"(x2,y2)",pos=3)
+lines(c(0,1),c(0,1))
+@ 
+
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Distance (horizontal/vertical shifts)}
+<<dist4,fig=TRUE, echo=F>>=
+par(bg="white")
+plot(0,xlim=c(-0.02,1.02),ylim=c(-0.02,1.02),axes=FALSE,type="n",xlab="",ylab="")
+points(0,0,pch=19)
+text(0,0,"(x1,y1)",pos=1)
+points(1,1,pch=19)
+text(1,1,"(x2,y2)",pos=3)
+lines(c(0,1),c(0,1))
+lines(c(0,1),c(0,0),lty=2)
+lines(c(1,1),c(0,1),lty=2)
+text(0.5,0,"dx=x2-x1",pos=1)
+text(1,0.5,"dy=y2-y1",pos=2)
+
+@ 
+\end{frame}
+
+
+\begin{frame}{Relative Distance (From CST 2011 Paper)}
+  
+  \begin{figure}
+   \centering
+   \includegraphics[scale=0.4]{Figures/distance.png}
+ \end{figure}
+\end{frame}
+
+
+%% \begin{frame}
+%%   \frametitle{Pythagorean Theorem (on the plane)}
+%% \begin{itemize}
+%% \item According to the Pythagorean theorem
+%% $$
+%% h^2=\mathrm{d}x^2+\mathrm{d}y^2=(x_2-x_1)^2+(y_2-y_1)^2
+%% $$
+%% \item $h$ is called the hypotenuse
+%% \item The distance between $(x_1,y_1)$ and $(x_2,y_2)$ is given by
+%% $$
+%% h=\sqrt{\mathrm{d}x^2+\mathrm{d}y^2}=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}
+%% $$
+
+%% \end{itemize}
+ 
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Pythagorean Theorem (on the plane)}
+%% \begin{itemize}
+%% \item Can be extended to higher dimensions
+%% \item In a three-dimensional space the distance between
+%%   $(x_1,y_1,z_1)$ and $(x_2,y_2,z_2)$ is given by 
+%% $$
+%% \sqrt{(x_1-x_2)^2+(y_1-y_2)^2+(z_1-z_2)^2}
+%% $$
+%% \item For any given dimension, the distance is obtained as the square root
+%%       of the sum of the 
+%%       square of the coordinate-wise differences 
+%% \end{itemize}
+
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Euclidean Space}
+%% \begin{itemize}
+%% \item The line, plane and so called 3d space are Euclidean spaces of dimensions 1,2 and 3
+%%       respectively
+%% \item A Euclidean space of dimension $d$ is typically denoted by $\mathbb R^d$
+%% \item The distance measure we discussed is called the Euclidean distance
+%% \item There are many other types of distances
+%% \item Think of each patient as a point in the $\mathbb R^m$ space where $m$ is the number of probe sets
+%% \item Use a distance to quantify similarity (or dissimilarity) among patients
+%% \item A "small" distance suggests that two patients are "similar"
+%% \end{itemize}
+%% \end{frame}
+
+\begin{frame}[fragile]{Dissimilarity matrix}
+  \begin{itemize}
+  \item Use a distance to quantify similarity (or dissimilarity) among patients
+  \item A matrix containing all pairwise distances
+  \item Take the first three patients in the Golub data set (based on
+    \Sexpr{nrow(Golub_Merge)} probe sets
+<<>>=
+dist(t(exprs(Golub_Merge[,1:3])))
+@
+\item The distance between patient 39 and 40 is 
+  \Sexpr{as.matrix(dist(t(exprs(Golub_Merge[,1:3]))))["39","40"]}
+\item Let us calculate this by hand
+<<>>=
+x=exprs(Golub_Merge)[,"39"]
+y=exprs(Golub_Merge)[,"40"]
+sqrt(sum((x-y)^2))
+@ 
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Dimension reduction}
+  \begin{itemize}
+\item Genome-wide profiling platforms are high-dimensional ($m$ is large)
+\item Visualization beyond $m=3$ not possible (for mortals)
+\item Representing the data by a lower dimensional format without losing
+      too much information is desired.
+\end{itemize}
+\end{frame}
+
+
+
+
+
+\begin{frame}
+  \frametitle{Multi-Dimensional Scaling (MDS)}
+  \begin{itemize}
+\item Compute the dissimilarity matrix based on a distance measure
+\item Project the points into a lower dimensional space (say 2D or 3D) 
+      while preserving the similarity matrix
+\item PCA is a related (and in a sense equivalent method to MDS)
+\item Project the points into a lower dimensional space where the new variables
+      are linear combinations of the original variables
+\item The new variables are chosen so as to have maximum variance and to be uncorrelated.
+\end{itemize}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{MDS for Golub Data}
+<<mdsgolub,fig=TRUE, echo=F,fig.width=7,fig.height=7,out.width='.6\\linewidth',fig.align='center'>>=
+MDS=cmdscale(dist(t(exprs(Golub_Merge))))
+plot(MDS,col=c(2,4)[ pData(Golub_Merge)[["ALL.AML"]]],pch=19,type="n",xlab="",ylab="")  
+text(MDS,as.character(pData(Golub_Merge)[["ALL.AML"]]),col=c(2,4)[pData(Golub_Merge)[["ALL.AML"]]])
+@ 
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{PCA for Golub Data}
+<<pcagolub,fig=TRUE, echo=F>>=
+PCA=t(exprs(Golub_Merge))%*%prcomp(t(exprs(Golub_Merge)))$rotation
+plot(PCA[,1:2],col=c(2,4)[ pData(Golub_Merge)[["ALL.AML"]]],pch=19,type="n",xlab="",ylab="")  
+text(PCA[,1:2],as.character(pData(Golub_Merge)[["ALL.AML"]]),col=c(2,4)[pData(Golub_Merge)[["ALL.AML"]]])
+@ 
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Preserving The Distances}
+\footnotesize
+  \begin{itemize}
+\item Extract and standardize expression matrix for Golub data set
+<<>>=
+scexpdat=scale(t(exprs(Golub_Merge)))
+dim(scexpdat)
+@ 
+\item Check means for the first 4 genes
+<<>>=
+apply(scexpdat[,1:4],2,mean)
+@ 
+\item Check standard deviations for the first 4 genes
+<<>>=
+apply(scexpdat[,1:4],2,sd)
+@ 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Preserving The Distances}
+\footnotesize
+  \begin{itemize}
+\item Check distance among the first three patients
+<<>>=
+dist(scexpdat[1:3,])
+@ 
+\item Calculate MDS $d=2$
+<<>>=
+MDS=cmdscale(dist(scexpdat),2)
+dist(MDS[1:3,])
+@ 
+\item Calculate MDS $d=3$
+<<>>=
+MDS=cmdscale(dist(scexpdat),3)
+dist(MDS[1:3,])
+@ 
+
+  \end{itemize}
+\end{frame}
+\begin{frame}[containsverbatim]
+  \frametitle{Preserving The Distances}
+\footnotesize
+  \begin{itemize}
+\item Check distance among the first three patients
+<<>>=
+dist(scexpdat[1:3,])
+@ 
+\item Calculate MDS $d=20$
+<<>>=
+MDS=cmdscale(dist(scexpdat),3)
+dist(MDS[1:3,])
+@ 
+\item Calculate MDS $d=45$
+<<>>=
+MDS=cmdscale(dist(scexpdat),45)
+dist(MDS[1:3,])
+@ 
+
+  \end{itemize}
+\end{frame}
+
+
+
+
+
+
+
+
+
+\begin{frame}
+  \frametitle{Distance between two clusters}
+  \begin{itemize}
+  \item Let $c_1,c_2,\ldots,c_n$ denote the $n$ patients
+  \item We now know how to calculate a distance say between $c_1$ and $c_5$
+  \item Define a cluster to be a set of "points"
+    \begin{itemize}
+    \item $\{c_1\}$ is a cluster with one member: $c_1$
+    \item $\{c_1,c_3\}$ is a cluster of two members: $c_1$ and $c_3$
+    \item $\{c_1,c_2,c_3\}$ is a cluster of three members of $c_1,c_2$ and $c_3$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Notion of a Linkage}
+  \begin{itemize}
+\item The distance measure quantified the distance between two points
+\item In clustering, you need to think about the criterion to link (merge)
+      the clusters
+\item maximum distance (aka complete linkage)
+\item average distance (aka average linkage)
+\item minimum distance (aka single linkage)
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{Agglomerative Hierarchical Clustering}
+  \begin{itemize}
+\item Agglomerate: To form clusters
+\item Let each of the $n$ points be its own cluster ($n$ clusters each with one single member)
+\item Find the pair of clusters that is most similar
+\item Now you have $n-1$ clusters (1 cluster with two members and $n-2$ clusters each with a single member)
+\item Compute the similarities between the $n-2$ "old" clusters with the new cluster
+\item Repeat the last two steps until all members have been merged into a single cluster.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Clustering Cities by Distances}
+  \begin{table}
+    \centering
+   \begin{tabular}{lllll}
+   & ATL&BOS&ORD& DCA\\
+ATL&  0 &934&585&542\\
+BOS& 934&  0&853& 392\\
+ORD& 585&853&  0& 598\\
+DCA& 542&392& 598&   0
+\end{tabular}
+  \end{table}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Clustering Cities by Distances (Single Linkage)}
+  \begin{table}
+    \centering
+   \begin{tabular}{lllll}
+   & ATL&BOS&ORD& DCA\\
+ATL&  0 &934&585&542\\
+BOS& 934&  0&853& 392\\
+ORD& 585&853&  0& 598\\
+DCA& 542&392& 598&   0
+\end{tabular}
+  \end{table}
+  \begin{table}
+    \centering
+   \begin{tabular}{llll}
+       &DCA-BOS&ATL&ORD\\
+DCA-BOS&0      &542&598   \\
+ATL    &542    &0  &585\\
+ORD    &598       &585&0
+\end{tabular}
+  \end{table}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Clustering Cities by Distances (Single Linkage)}
+  \begin{table}
+    \centering
+   \begin{tabular}{llll}
+       &DCA-BOS&ATL&ORD\\
+DCA-BOS&0      &542&598   \\
+ATL    &542    &0  &585\\
+ORD    &598       &585&0
+\end{tabular}
+  \end{table}
+
+  \begin{table}
+    \centering
+   \begin{tabular}{lll}
+           &DCA-BOS-ATL&ORD\\
+DCA-BOS-ATL&0          &585   \\
+ORD        &585        &0
+\end{tabular}
+  \end{table}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Four Airports (Single linkage)}
+<<apsing,fig=TRUE,echo=FALSE>>=
+plot(hclust(as.dist(cities[1:4,1:4]),method="single"))
+@   
+\end{frame}
+
+
+
+%% \begin{frame}
+%%  \begin{figure}
+%%    \frametitle{City Example (Single Linkage)}
+%%     \centering
+%%     \includegraphics[scale=0.45]{Figures/dendcity.pdf}
+%%   \end{figure}
+
+%% \end{frame}
+
+<<echo=FALSE>>=
+data(cities)
+@ 
+
+
+\begin{frame}
+  \frametitle{Clustering Cities by Distances (complete linkage)}
+  \begin{table}[!htbp]
+    \centering
+   \begin{tabular}{lllll}
+   & ATL&BOS&ORD& DCA\\
+ATL&  0 &934&585&542\\
+BOS& 934&  0&853& 392\\
+ORD& 585&853&  0& 598\\
+DCA& 542&392& 598&   0
+\\ \hline
+       &DCA-BOS&ATL&ORD\\
+DCA-BOS&0      &934&853   \\
+ATL    &934    &0  &585\\
+ORD    &853       &585&0
+\\ \hline
+          &DCA-BOS&ATL-ORD\\
+DCA-BOS&0          &934   \\
+ATL-ORD&934       &0
+\end{tabular}
+\end{table}
+\end{frame}
+
+
+\begin{frame}[fragile]{Four Airports (complete linkage)}
+<<apcomp,fig=TRUE,echo=FALSE>>=
+plot(hclust(as.dist(cities[1:4,1:4]),method="complete"))
+@   
+\end{frame}
+
+\begin{frame}{Four Airports (side by side)}
+  \begin{table}[!htb]
+    \tiny
+      \centering
+          \begin{tabular}{lllll}
+   & ATL&BOS&ORD& DCA\\
+ATL&  0 &934&585&542\\
+BOS& 934&  0&853& 392\\
+ORD& 585&853&  0& 598\\
+DCA& 542&392& 598&   0
+\\ \hline
+       &DCA-BOS&ATL&ORD\\
+DCA-BOS&0      &934&853   \\
+ATL    &934    &0  &585\\
+ORD    &853       &585&0
+\\ \hline
+          &DCA-BOS&ATL-ORD\\
+DCA-BOS&0          &934   \\
+ATL-ORD&934       &0
+\end{tabular}
+\caption{Complete Linkage}
+\end{table}
+\begin{table}[!htb]
+    \tiny
+      \centering
+        \begin{tabular}{lllll}
+   & ATL&BOS&ORD& DCA\\
+ATL&  0 &934&585&542\\
+BOS& 934&  0&853& 392\\
+ORD& 585&853&  0& 598\\
+DCA& 542&392& 598&   0
+\\ \hline
+       &DCA-BOS&ATL&ORD\\
+DCA-BOS&0      &542&598   \\
+ATL    &542    &0  &585\\
+ORD    &598       &585&0
+\\ \hline
+           &DCA-BOS-ATL&ORD\\
+DCA-BOS-ATL&0          &585   \\
+ORD        &585        &0
+\end{tabular}
+\caption{Single Linkage}    
+\end{table}
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{All Airports (comparison)}
+<<airport3,fig=TRUE,echo=FALSE>>=
+plot(hclust(dist(cities),method="complete"))
+plot(hclust(dist(cities),method="single"))
+@   
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{$k$-means Clustering}
+  \begin{itemize}
+\item Specify a number of potential clusters ($k$)
+\item Split of the data (either randomly or based on some previous results) into $k$ partitions
+\item Compute the mean (aka centroid) for each partition
+\item For the first point (sample) determine the {\it nearest} centroid
+\item The closeness is typically quantified using the Euclidean distance
+\item Assign that point to that center
+\item Repeat for points 2 through $n$
+\item Assess the fit using the intra-cluster variance
+\item Repeat as needed.
+\end{itemize}
+\end{frame}
+\begin{frame}
+  \frametitle{$k$-means Illustration}
+\begin{figure}
+   \centering
+   \includegraphics[scale=0.45]{Figures/kmean1.pdf}
+ \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{$k$-means Illustration}
+\begin{figure}
+   \centering
+   \includegraphics[scale=0.45]{Figures/kmean11.pdf}
+ \end{figure}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{$k$-means Illustration}
+\begin{figure}
+   \centering
+   \includegraphics[scale=0.38]{Figures/kmean3.pdf}
+ \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{$k$-means}
+  \begin{itemize}
+\item This is an example of {\it non-hierarchical} clustering
+\item Need to specify the number of clusters up front
+\item Need to specify (deterministically or randomly) the 
+      centers of the clusters up front
+\item Results are sensitive to the choice of $k$ and initial partitions
+\item There is a relationship between $k$-means and PCA.
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Batch Effect Discovery}
+  \begin{itemize}
+\item The MDS method is very useful for detecting batch effects
+\item Batch effects tend to be stronger that biological effects
+\item They also affect most probe sets (the biological effect may only be captured by a few)
+\item This can be an effective weapon in your QC arsenal (this is how I start any new analysis)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{From CCR 2008 Paper}
+   \begin{figure}
+   \centering
+   \includegraphics[scale=0.45]{Figures/CCR-FIG1.pdf}
+ \end{figure}
+  
+\end{frame}
+\begin{frame}
+  \frametitle{ALL/AML Data}
+
+  \begin{figure}
+   \centering
+   \includegraphics[scale=0.45]{Figures/CTS-ALLAML-MDS.pdf}
+ \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Semi-supervised Learning}
+  \begin{itemize}
+\item Heatmap illustration:
+  \begin{itemize}
+  \item Select a panel of probe-sets based on the two-sample $t$-test
+  \item Carry out hierarchical clustering with respect to the patients (the columns)
+  \item Carry out hierarchical clustering with respect to the probe sets in the panel (the rows)
+  \item Present the results using a heatmap
+  \end{itemize}
+\item Some consider this an {\it unsupervised} analysis as the hierarchical clustering algorithm
+      is unaware of the classes
+\item This is not an accurate assessment: It is semi-supervised in the sense that we are picking
+      genes based on the phenotype
+\item A procedure is {\it unsupervised} if the class info is only used for annotation
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{{\tt R} Code to simulate Heatmap}
+\footnotesize
+<<>>=
+simulate.noise.heatmap=function(n,m,alpha)
+  {
+    # Simulate Expression Matrix
+    EXPRS=matrix(rnorm(2*n*m),m,2*n)
+    grp=factor(rep(0:1,c(n,n)))
+    rownames(EXPRS)=paste("Gene",1:m,sep="")
+    colnames(EXPRS)=paste("patient id",1:(2*n),sep="")
+
+    # Get the two sample t-statistics
+    pvals=rowttests(EXPRS, grp)$p.value
+    topgenes=which(pvals<alpha)
+    EXPRS=EXPRS[topgenes,]
+    annodat=data.frame(Condition=ifelse(grp==0,"N","Y"),row.names=colnames(EXPRS))
+    pheatmap(EXPRS,
+             border_color =NA,
+             show_rownames = FALSE,
+             show_colnames=FALSE,
+             annotation_col=annodat,
+             color=colorRampPalette(c("red3", "black", "green3"))(50),
+             annotation_colors=list(Condition=c(Y="blue",N="yellow")))
+    return(length(topgenes))
+  }
+@ 
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Heatmap Example: $m=20,000, n=20$, $\alpha=0.005$}
+<<hm1,fig=TRUE, echo=F,out.width='.5\\linewidth'>>=
+set.seed(1333)
+aa=simulate.noise.heatmap(20,20000,0.005)
+@ 
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Heatmap Example: $m=40,000, n=20$, $\alpha=0.0025$}
+
+<<hm2,fig=TRUE, echo=F,out.width='.5\\linewidth'>>=
+aa=simulate.noise.heatmap(20,40000,0.0025)
+@ 
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Heatmap Example: $m=20,000, n=3$, $\alpha=0.005$}
+
+<<hm3,fig=TRUE, echo=F,out.width='.5\\linewidth'>>=
+aa=simulate.noise.heatmap(3,20000,0.005)
+@ 
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{{\tt R} Code to simulate PC}
+\footnotesize
+<<>>=
+simulate.noise.PC=function(n,m,alpha)
+  {
+    # Simulate Expression Matrix
+    EXPRS=matrix(rnorm(2*n*m),m,2*n)
+    grp=factor(rep(0:1,c(n,n)))
+    # Get the two sample t-statistics
+    pvals=rowttests(EXPRS, grp)$p.value
+    topgenes=which(pvals<alpha)
+    EXPRS=EXPRS[topgenes,]
+    annodat=data.frame(Condition=ifelse(grp==0,"N","Y"),row.names=colnames(EXPRS))
+    PC=cmdscale(dist(t(EXPRS)))
+    plot(PC,xlab="PC1",ylab="PC2",col=ifelse(grp==0,"yellow","blue"),pch=19)
+    return(length(topgenes))
+}
+@ 
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Heatmap Example: $K=20000, n=20$, $\alpha=0.005$}
+<<pc1,fig=TRUE, echo=F,out.width='.5\\linewidth'>>=
+set.seed(1333)
+aa=simulate.noise.PC(20,20000,0.005)
+@ 
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Heatmap Example: $K=40000, n=20$, $\alpha=0.0025$}
+
+<<pc2,fig=TRUE, echo=F,out.width='.5\\linewidth'>>=
+aa=simulate.noise.PC(20,40000,0.0025)
+@ 
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Heatmap Example: $K=20000, n=3$, $\alpha=0.005$}
+
+<<pc3,fig=TRUE, echo=F,out.width='.5\\linewidth'>>=
+aa=simulate.noise.PC(3,20000,0.005)
+@ 
+
+
+
+
+
+
+
+
+\end{frame}
+
+
+
+\begin{frame}{Reminder: A Self-fulfilling Prophecy}
+  \begin{itemize}
+  \item Statistical method for unsupervised learning guarantee one thing
+  \item They will return a clustering of your data
+  \item What they do not guarantee and are invariably unable to 
+        verify, is the biological relevance or reproducibility of the clustering
+  \item In light of this Self-fulfilling Prophecy, these methods should be used
+      with utmost care
+  \end{itemize}
+\end{frame}
+
+
+

@@ -1,0 +1,55 @@
+
+
+\begin{frame}{Right Censoring}
+Large values are censored (e.g., time of death)
+\input{Figures/rcensfig.tex}
+\end{frame}
+
+
+
+\begin{frame}{Interval Censoring}
+Disease progression occurs after the {\it last} visit
+(where patient was assessed to be in remission) and before
+the {\it current} visit ((where patient was assessed to have relapsed)
+  \input{Figures/icensfig.tex}
+\end{frame}
+
+\begin{frame}{Left Censoring}
+ Small values are censored (e.g., Below Quantifiable Limit; low sequencing depth)    
+\input{Figures/lcensfig.tex}
+\end{frame}
+
+
+
+\begin{frame}{Classification is Easier than Regression}
+  \begin{itemize}
+  \item In GWAS and DNA-seq one objective is to call the genotype of a SNP: {\it AA, AB} or {\it BB}
+  \item In RNA-Seq and microarray, an objective may be to quantify RNA
+  \item Note that in both GWAS and DNA-seq, there is a model for SNP (there are either 0, 1 or two copies of the
+        minor allele, with some unknown probabilities)
+  \item There is no such model for RNA quantification
+  \item More generally: Classification is Easier than Regression
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Variant Calling}
+  This module will outline a simple mixture model for NGS variant calling
+\end{frame}
+
+\begin{frame}
+  \begin{itemize}
+  \item $V$ is the numver of variant calls
+  \item $N$ is the read depth
+  \item $\alpha$ is the base call error rate
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Distribution of $V$ given $G=AA$}
+  \begin{itemize}
+  \item $R$ is the numver of variant calls
+  \item $N$ is the read depth
+  \item $\alpha$ is the base call error rate
+  \end{itemize}
+\end{frame}

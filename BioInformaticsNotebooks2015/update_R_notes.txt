@@ -1,0 +1,14 @@
+
+1. ssh to your VM `ssh bitnami@colab-sbx-XXX.oit.duke.edu'
+   * XXX is the number of your VM.
+   * The password is the one from vm-manage.
+2. `cd ~/bioinf_nb_ngscourse2015'
+3. `git pull' to get upgrade script
+4. `sudo bash update_R.sh' to upgrade R and DESeq2
+5. `Rscript check_R.R'
+   * "R version" should be "3.2.1"
+   * DESeq2 should be "DESeq2_1.8.1"
+6. `pkill ipython' to stop the running jupyter server
+7. `ps -u bitnami' be sure that "ipython" is no longer listed
+8. `cd ~/' so jupyter can access your whole directory
+9. `~/startnb &' to restart jupyter server

@@ -1,0 +1,84 @@
+\begin{frame}{Simple Experiment}
+  \begin{itemize}
+  \item 
+  \item The sample size $n$ is assumed to pre-specified
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Data}
+  \begin{itemize}
+  \item Prior to collection of the data
+  \item We denote the {\it realized} observations 
+        by $x_1,\ldots,x_n$
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Estimator versus Estimate}
+  \begin{itemize}
+  \item Note that the estimator is random 
+  \item Its value is unknown 
+  \item Once the data are collected, the value of the estimator
+        can be calcu
+  
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Likelihood function}
+  \begin{itemize}
+  \item The likelihood function is the joint density evaluated at the
+  realized values
+  \item 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Likelihood function: Binomial Example}
+  \begin{itemize}
+  \item The pmf for $X_i$ is $f[u;\pi]=\pi^x \times
+    (1-\pi)^{1-x}$ where $u=0$ or 1.
+  \item The joint pmf for the random sample $X_1,\ldots,X_n$ is
+    \begin{equation*}
+      f[u_1,\ldots,u_n;\pi] = f[u_1;\pi] \times \ldots \times
+       f[u_n;\pi] = \pi^{u_1} \times
+    (1-\pi)^{1-u_{1}} \times \ldots \times
+    \pi^{u_n} \times
+    (1-\pi)^{1-u_{n}}
+    \end{equation*}
+  \item The likelihood for $\pi$ given the realized values $x_1,\ldots,x_n$
+      \begin{equation*}
+        L[\pi]= 
+         (1-\pi)^{1-x_{1}} \times \ldots \times
+    \pi^{u_n} \times
+    (1-\pi)^{1-x_{n}}
+    \end{equation*}
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Likelihood function: Binomial Example}
+<<>>=
+x=rbinom(5,1,0.5)
+x
+@ 
+\begin{itemize}
+\item Observed data 
+  $x_1=\Sexpr{x[1]}$, $x_1=\Sexpr{x[2]}$,
+  $x_3=\Sexpr{x[3]}$, $x_4=\Sexpr{x[4]}$ and
+  $x_5=\Sexpr{x[5]}$,
+\end{itemize}
+\begin{equation*}
+  L[\pi]=
+  \pi^{\Sexpr{x[1]}} (1-\pi)^{1-\Sexpr{x[1]}}\times
+   \pi^{\Sexpr{x[2]}} (1-\pi)^{1-\Sexpr{x[2]}}\times
+    \pi^{\Sexpr{x[3]}} (1-\pi)^{1-\Sexpr{x[3]}}\times
+     \pi^{\Sexpr{x[4]}} (1-\pi)^{1-\Sexpr{x[4]}}\times
+      \pi^{\Sexpr{x[5]}} (1-\pi)^{1-\Sexpr{x[5]}}
+\end{equation*}
+\end{frame}
+
+
+
+

@@ -1,0 +1,15 @@
+\begin{center}
+    \begin{tikzpicture}
+        \node (start){};
+        \node (LV)   [right of=start][node distance= 1cm][pin={[pointing]below:last visit}]  {};
+        \node (LVpin)[below of=LV][node distance= 1cm][pin={[pointing]below:disease free}] {};
+        \node (X)    [right of=start][node distance= 4cm][cross][pin={[pointing]below:disease progression}] {};
+        \node (CV)   [right of=start][node distance= 9cm][pin={[pointing]below:current visit}] {};
+        \node (end)  [right of=start][node distance=10cm] {};
+        \draw[-|] (start.center) -- (LV.center);
+        \draw[-]  (LV.center) -- (X.center);
+        \draw[-]  (X.center) -- (CV.center);
+        \draw[|-] (CV.center) -- (end.center);
+    \end{tikzpicture}
+\end{center}
+

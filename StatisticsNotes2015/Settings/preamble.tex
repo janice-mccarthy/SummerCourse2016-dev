@@ -1,0 +1,52 @@
+%gets rid of bottom navigation bars
+%\setbeamertemplate{footline}[page number]{}
+%gets rid of navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+%% General document %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{bookmark}
+\usepackage[absolute,overlay]{textpos} 
+\usetikzlibrary{decorations.fractals}
+\usetikzlibrary{lindenmayersystems}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% Beamer Layout %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\useoutertheme[subsection=false,shadow]{miniframes}
+\useinnertheme{default}
+%\usefonttheme{serif}
+%\usepackage{palatino}
+
+%\setbeamerfont{title like}{shape=\scshape}
+%\setbeamerfont{frametitle}{shape=\scshape}
+
+\setbeamercolor*{lower separation line head}{bg=DeepSkyBlue4} 
+\setbeamercolor*{normal text}{fg=black,bg=white} 
+\setbeamercolor*{alerted text}{fg=red} 
+\setbeamercolor*{example text}{fg=black} 
+\setbeamercolor*{structure}{fg=black} 
+ 
+\setbeamercolor*{palette tertiary}{fg=black,bg=black!10} 
+\setbeamercolor*{palette quaternary}{fg=black,bg=black!10} 
+
+\renewcommand{\(}{\begin{columns}}
+\renewcommand{\)}{\end{columns}}
+\newcommand{\<}[1]{\begin{column}{#1}}
+\renewcommand{\>}{\end{column}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%\pgfdeclareimage[width=.4in]{dumc:logo}{../Logo/d_medicine_vert_rgb.png} 
+\pgfdeclareimage[width=.6in]{dumc:logo}{Logo/d_DCI_signature_NCI_rgb.png} 
+\pgfdeclareimage[width=.4in]{bb:logo}{Logo/bblogo.png}
+
+\newcommand{\bP}{\mathbb P}
+\newcommand{\bI}{\mathbb I}
+\newcommand{\bE}{\mathbb E}
+
+\usepackage{amssymb}
+
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing

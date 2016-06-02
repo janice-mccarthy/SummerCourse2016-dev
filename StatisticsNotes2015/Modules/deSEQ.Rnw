@@ -1,0 +1,462 @@
+\begin{frame}{General Note}
+  \begin{itemize}
+  \item Recall the simple linear regression model for expression
+    \begin{equation*}
+      Y=\beta_0+\beta_1 x + \epsilon,
+    \end{equation*}
+  where 
+  \begin{itemize}
+  \item   $x=0$ (untreated)
+    \item or $x=1$ (treated)
+  \end{itemize}
+\item $Y$ is the observed "expression" of the gene
+ \item $\epsilon$ is the measurement noise term
+ \item The parameter of interest is $\beta_1$ (the treatment effect)
+ \item There are two other unknown parameters, $\beta_0$ and $\sigma^2$
+  the estimation procedure has to deal with in a {\it principled} manner
+\item $\beta_0$ and $\sigma^2$ are {\it nuisance} parameters
+\item They are not of primary (or any) interest. But you have to deal with them!
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{General Hypothesis}
+  \begin{itemize}
+  \item Is the RNA abundance level for any of the $m$ genes affected by treatment
+  \item Let $H_j$ denote the null hypothesis for gene $j$
+  \item $H_j$: The  RNA abundance level for gene $j$ is not affected by treatment
+  \item $\bar{H}_j$: The  RNA abundance level for gene $j$ is affected by treatment
+  \item The global null hypothesis: $H_1$ and $H_2$ and .... and $H_m$ are all true
+  \item The global alternative: $\bar{H}_1$ or $\bar{H}_2$ or .... or $\bar{H}_m$ is true
+  \item In other words, under the alternative at least one of the marginal null hypotheses is false
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Observed Data}
+  \begin{itemize}
+  \item Some notation
+  \begin{itemize}
+    
+  \item $n$ denotes the number of samples
+  \item $m$ denotes the number of genes
+  \item $K_{ij}$ denotes the {\it observed} number of reads mapped to gene $i$ for sample $j$
+  \item $x_j=0$ or 1 denotes the treatment status for sample $j$
+  \end{itemize}
+  \item What is observed for sample $j$ is the vector
+    \begin{equation*}
+      K_{1j},\ldots,K_{mj},x_j
+    \end{equation*}
+  \item In other words $m$ counts (one per gene) and the experimental factor
+  \item Note that the $K_{ij}$ form a table of counts of dimension $n\times m$ ($n$ samples and
+    $m$ genes)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{DESeq: Notation for Negative Binomial Distribution}
+  \begin{itemize}
+  \item The count $K$ is assumed to follow a negative binomial distribution with parameters $p\in (0,1)$ and $r>1$
+  \item The distribution is PMF is 
+    \begin{equation*}
+      P(K=k)={k+r-1 \choose r-1} p^r (1-p)^k,
+    \end{equation*}
+  for $k=r,r+1,\ldots$
+  \item Rather than considering the model as $\mathrm{NB}[p,r]$ we will consider it as
+    $\mathrm{NB}[\mu,\alpha]$, where
+      \begin{equation*}
+           P[K=k]=\frac{\Gamma[k+\alpha^{-1}]}{\Gamma[\alpha^{-1}]\Gamma[k+1]}
+             \bigg(\frac{1}{1+\mu\alpha}\bigg)^{\alpha^{-1}}
+             \bigg(\frac{\mu}{\alpha^{-1}+\mu}\bigg)^k,
+        \end{equation*}
+     where $k=0,1,\ldots$
+
+  \end{itemize}
+\end{frame}
+
+%% \begin{frame}{Yet Another Representation of the NB PMF}
+%%   \begin{itemize}
+%%   \item 
+%%     \begin{equation*}
+%%       P(K=k)=\frac{\gamma(k+\phi^{-1})}{\gamm(\pi^{-1}
+%%     \end{equation*}
+%%   \end{itemize}
+%% \end{frame}
+
+
+\begin{frame}{DESeq: Notation}
+  \begin{itemize}
+  \item $K_{ij}$ denotes the {\it observed} number of reads mapped to gene $i$ for sample $j$
+  \item $K_{ij}$ follows a negative binomial distribution with
+    \begin{itemize}
+    \item Mean $\mu_{ij}$ (indexed by gene $i$ {\it and} sample $j$)
+    \item Dispersion parameter $\alpha_i$ (indexed by the gene $i$)
+    \end{itemize}
+  \item The mean is assumed to be $\mu_{ij}=s_{j} q_{ij}$
+    where
+    \begin{itemize}
+    \item  $\log q_{ij} = \beta_{i0} + \beta_{i1} x_j$
+    \item  $s_j$ is a gene $j$ specific normalization constant
+  \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{DESeq: Reformulate Hypotheses}
+  \begin{itemize}
+    \item Hypotheses of interest
+       \begin{itemize}
+   \item The global null hypothesis: $H_1$ and $H_2$ and .... and $H_m$ are all true
+  \item The global alternative: $\bar{H}_1$ or $\bar{H}_2$ or .... or $\bar{H}_m$ is true
+    \end{itemize}
+   \item Reformulation
+     \begin{itemize}
+     \item The global null hypothesis: $\beta_{11}=0$ and $\beta_{21}=0$ and .... and $\beta_{m1}=0$
+      \item In other words, all of the $\beta_{j1}$ are equal to zero
+       \item The global alternative: $\beta_{11} \ne 0$ or $\beta_{21}=0$ or .... or $\beta_{m1}=0$
+       \item In other words, at least one of the $\beta_{j1}$ is not equal to zero
+     \end{itemize}
+    
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{DESeq: Assumption on Distribution}
+  $K_{ij}$ follows a negative binomial distribution with mean $\mu$ and dispersion parameter $\alpha$
+\end{frame}
+
+\begin{frame}{DESeq: Assumption on Mean of Distribution}
+  \begin{itemize}
+  \item Conditional on the treatment status of sample $j$ ($x_j=0$ or 1), the expected value of $K_{ij}$ is
+    \begin{equation*}
+      \mu_{ij} = s_{j} \times q_{ij}
+    \end{equation*}
+ where
+    \begin{equation*}
+     \log q_{ij} = \beta_{i0} + \beta_{i1} x_j
+    \end{equation*}
+  \item Note that two regression parameters are indexed by $i$
+  \item Why? Because these are gene $i$ specific parameters
+  \item Why is $x_j$ not indexed by $i$?
+  \item Final Assumption: $s_{ij}=s_j$
+  \item In other words: Within sample $j$, the normalization parameter is constant across the genes
+  \item How many assumptions so far?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{DESeq: Main parameters and Nuisance Parameters}
+  \begin{itemize}
+    \item The $m$ main parameters of interest
+      \begin{equation*}
+        \beta_{11},\ldots,\beta_{m1}
+      \end{equation*}
+  \item The unknown nuisance parameters are
+    \begin{itemize}
+      \item The $m$ gene specific intercepts
+        \begin{equation*}
+          \beta_{10},\ldots,\beta_{m0}
+        \end{equation*}
+      \item the $n$ sample specific normalization constants
+        \begin{equation*}
+          s_1,\ldots,s_n
+        \end{equation*}
+      \item The $m$ gene specific nuisance parameters
+         \begin{equation*}
+          \alpha_{1},\ldots,\alpha_{m}
+        \end{equation*}
+       \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{DESeq: Main parameters and Nuisance Parameters}
+  \begin{itemize}
+   \item Assuming the model assumptions are correct, the estimation of the regression parameters $\beta_{i0},\beta_{i1}$
+         is fairly straightforward
+   \item The DESeq authors propose to estimate the normalization constant for sample $j$ as
+     \begin{equation*}
+       s_j =\mathrm{median} \frac{K_{ij}}{K_i^R},
+     \end{equation*}
+     where 
+     \begin{equation*}
+       K_i^R=\bigg(\prod_{j=1}^m K_{ij} \bigg)^{\frac{1}{m}}
+     \end{equation*}
+   \item Here $K_i^R$ is the geometric mean of $K_{i1},\ldots,K_{in}$ (the $n$ counts for gene $i$)
+   \item The median is taken over all $m$ genes for which $K_i^R$ is positive
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{DESeq: Dispersion parameter}
+  \begin{itemize}
+  \item A key issue in using the NB model is proper handling of the gene specific dispersion parameters
+    \begin{equation*}
+       \alpha_{1},\ldots,\alpha_{m}
+    \end{equation*}
+  \item The estimation of the dispersion parameter is a challenging task
+  \item DESeq2 assumes that $\alpha_i$ is random following a normal distribution
+  \item The results are sensitive to the estimates
+  \item One of the key differences between DESeq2 and DESeq is the approach taken to estimate these nuisance 
+    parameters
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{DESeq Software Overview}
+  \begin{itemize}
+  \item The analysis of RNA-Seq data  using the {\tt DESeq2} package will be 
+        reviewed in detail in the upcoming weeks
+  \item The estimation and inference for the model is done through the {\tt DESeq}
+    function
+  \item It performs the following steps in the order give
+    \begin{enumerate}
+    \item estimation of size factors $s_1,\ldots,s_n$
+    \item estimation of dispersion parameters $\alpha_1,\ldots,alpha_m$
+    \item Fit NB GLM model
+     \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{DESeq: Model Exercise}
+  \begin{itemize}
+   \item $K_{ij}$ denotes the {\it observed} number of reads mapped to gene $i$ for sample $j$
+  \item $x_j=0$ or 1 denotes the treatment status for sample $j$
+  \item Say we want to account for another covariate $z_j$ (e.g., temperature)
+  \item What is observed for sample $j$ is the vector
+    \begin{equation*}
+      K_{1j},\ldots,K_{mj},x_j,z_j
+    \end{equation*}
+  \item Questions
+    \begin{itemize}
+    \item State the hypotheses
+    \item Propose a model (that incorporates the additional covariate)
+    \item List any assumptions that you have made
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{DESeq: Model Exercise}
+  \begin{itemize}
+  \item The null hypothesis $H_0: \beta_{11}=0 \mbox{ and } \beta_{21}=0 \mbox{ and } \ldots \beta_{m1}=0$
+   \item Conditional on $x_j$ and $z_j$, the observed number of reads mapped to gene $i$ for sample $j$, $K_{ij}$, follows a 
+     negative binomial distribution with
+    \begin{itemize}
+    \item Mean $\mu_{ij}$ 
+    \item Dispersion parameter $\alpha_i$ (gene specific)
+    \end{itemize}
+  \item Conditional on the treatment status of sample $j$ ($x_j=0$ or 1) and the temperature $z_j$, 
+    the expected value of $K_{ij}$ is
+    \begin{equation*}
+      \mu_{ij} = s_{j} \times q_{ij}
+    \end{equation*}
+  where
+    \begin{equation*}
+     \log q_{ij} =\beta_{i0} + \beta_{i1} x_j + \beta_{i2} z_j
+    \end{equation*}
+    \item The normalization parameters are assumed to be sample (not gene) specific ($s_{ij}=s_j$)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{DESeq: Model Nuisance Parameter}
+   \begin{itemize}
+    \item The $m$ main parameters of interest
+      \begin{equation*}
+        \beta_{11},\ldots,\beta_{m1}
+      \end{equation*}
+  \item The unknown nuisance parameters are
+    \begin{itemize}
+      \item The $m$ gene specific intercepts
+        \begin{equation*}
+          \beta_{10},\ldots,\beta_{m0}
+        \end{equation*}
+         \item The $m$ gene specific coefficients for the new covariate
+        \begin{equation*}
+          \beta_{12},\ldots,\beta_{m2}
+        \end{equation*}
+      \item the $n$ sample specific normalization constants
+        \begin{equation*}
+          s_1,\ldots,s_n
+        \end{equation*}
+      \item The $m$ gene specific nuisance parameters
+         \begin{equation*}
+          \alpha_{1},\ldots,\alpha_{m}
+        \end{equation*}
+       \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{edgeR: Another NB Model for RNA-Seq Counts}
+  \begin{itemize}
+  \item Assume that the $K_{ij}$ follows a NB distribution with mean $\mu_{ij}$ and dispersion
+        paramater $\alpha_i$
+  \item The mean (conditional on treatment status $x$) is
+    \begin{equation*}
+      \mu_ij=M_j p_{xi} 
+    \end{equation*}
+    where
+    \begin{itemize}
+    \item $M_j$ is the library size (total number of reads for sample $j$
+    \item $p_{xi}$ is the relative abudance of the gene $i$ given treatment status $x$ 
+      \begin{itemize}
+      \item $p_{0i}$ is the relative abudance of the gene $i$ given no treatment
+       \item $p_{1i}$ is the relative abudance of the gene $i$ given treatment
+      \end{itemize}
+    \end{itemize}
+  \item Treatment changes the abudance of RNA in gene $i$ if $p_{0i}\ne p_{1i}$
+  \item This is same distributional assumption as in DESeq
+  \end{itemize}
+\end{frame}
+
+
+%% \begin{frame}
+%% <<echo=FALSE>>=
+%% attach("Data/NGSdry.Rdata")
+%% cond=factor(rep(0:1,each=3))
+%% ds=DESeqDataSetFromMatrix(NGSdrycounts, DataFrame(cond), ~ cond)
+%% ds=estimateSizeFactors(ds)
+
+%% @
+
+\begin{frame}{MLE Illustration}
+  \begin{itemize}
+  \item In a GLM, the parameters $\beta_{i0}$ and $\beta_{i1}$ are estimated using the
+    method of Maximum likelihood (MLE)
+  \item We illustrate the method using this coin tossing example:
+  \item We toss a coin once and record the number of heads
+  \item Suppose that you conduct two independent replicates of this experiment
+  \item $K_1$ the number of events (among $n=1$ trial) in experiment 1
+  \item $K_2$ the number of events (among $n=1$ trial) in experiment 2
+  \item The PMF of $K_1$ is
+    \begin{equation*}
+      P(K_1=k) = \pi^k (1-\pi_k)^{1-k}
+    \end{equation*}
+   \item The PMF of $K_1$ is
+    \begin{equation*}
+      P(K_2=k) = \pi^k (1-\pi_k)^{1-k}
+    \end{equation*}
+   \item Here $k=0$ or 1
+  \end{itemize}
+\end{frame}
+
+
+%% \begin{frame}{Joint Distribution}
+%%   \begin{itemize}
+%%   \item These
+%%     \begin{equation*}
+%%       P(K_1=k) = \pi^k (1-\pi)^{1-k}
+%%     \end{equation*}
+%%     and
+%%       \begin{equation*}
+%%       P(K_2=k) = \pi^k (1-\pi)^{1-k}
+%%     \end{equation*}
+%%     are the marginal PMFs
+%%   \item What is the joint PMF
+%%     \begin{equation*}
+%%       P(K_1=k_1,K_2=k_2) = \pi^{k_1} (1-\pi)^{1-k_1} \times \pi^{k_2} (1-\pi)^{1-k_2}
+%%     \end{equation*}
+%%   \end{itemize}
+%% \end{frame}
+
+\begin{frame}{Joint Distribution}
+  \begin{itemize}
+  \item Repeat the experiment $B$ times
+  \item The joint PMF is
+    \begin{equation*}
+      P(K_1=k_1,\ldots,K_B=k_B) = \pi^{k_1} (1-\pi)^{1-k_1} \times \ldots \times \pi^{k_B} (1-\pi)^{1-k_B}
+    \end{equation*}
+  \item Note that the implicit assumption is that the experiments are mutually independent
+  \item Under this assumption, the joint PMF is the product of the marginal PMFs
+  \item Plugging in the {\it observed} counts into the joint PMF yields the likelihood function
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Binomial Example: Observed data}
+<<>>=
+set.seed(2131)
+x=rbinom(5,1,0.5)
+x
+@ 
+\begin{itemize}
+\item Observed data 
+  $x_1=\Sexpr{x[1]}$, $x_1=\Sexpr{x[2]}$,
+  $x_3=\Sexpr{x[3]}$, $x_4=\Sexpr{x[4]}$ and
+  $x_5=\Sexpr{x[5]}$
+  \item What is the likelihood?
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Binomial Example: Likelihood}
+  \begin{itemize}
+\item Observed data 
+  $x_1=\Sexpr{x[1]}$, $x_1=\Sexpr{x[2]}$,
+  $x_3=\Sexpr{x[3]}$, $x_4=\Sexpr{x[4]}$ and
+  $x_5=\Sexpr{x[5]}$
+  \item The likelihood
+\begin{eqnarray*}
+  L[\pi] & = & 
+  \pi^{x_1} (1-\pi)^{x_1} \times 
+    \pi^{x_2} (1-\pi)^{x_2} \times 
+      \pi^{x_3} (1-\pi)^{x_3} \times
+    \\ 
+    & &
+        \pi^{x_4} (1-\pi)^{x_4} \times 
+          \pi^{x_5} (1-\pi)^{x_5} \times\\
+          & = &
+  \pi^{\Sexpr{x[1]}} (1-\pi)^{1-\Sexpr{x[1]}}\times
+   \pi^{\Sexpr{x[2]}} (1-\pi)^{1-\Sexpr{x[2]}}\times
+    \pi^{\Sexpr{x[3]}} (1-\pi)^{1-\Sexpr{x[3]}}\times
+     \\ 
+    & &
+     \pi^{\Sexpr{x[4]}} (1-\pi)^{1-\Sexpr{x[4]}}\times
+      \pi^{\Sexpr{x[5]}} (1-\pi)^{1-\Sexpr{x[5]}}\\
+      & = &
+      \pi^{\Sexpr{sum(x==1)}} (1-\pi)^{\Sexpr{sum(x==0)}}
+\end{eqnarray*}
+\item Given the observed data find the value of $\pi$ that maximizes this
+  probability
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Binomial Example: Maximum Likelihood}
+  The maximum value of the function $L[\pi]=\pi^{\Sexpr{sum(x==1)}} (1-\pi)^{\Sexpr{sum(x==0)}}$ occurs at $\pi=\Sexpr{mean(x)}$.
+<<fig=TRUE,echo=FALSE>>=
+tt=seq(0,1,length=1000)
+plot(tt,tt^(sum(x==1))*(1-tt)^(sum(x==0)),type="l",xlab="pi",ylab="L(pi)",lwd=2,col="blue3")
+abline(v=mean(x))
+@ 
+\end{frame}
+
+\begin{frame}[fragile]{Maximum Likelihood Calculation for NB}
+  \begin{itemize}
+  \item For gene $i$, let $k_{11},\ldots,k_{1n}$ the $n$ observed counts
+  \item For patient $j$ plug the observed count $k_{ij}$ into the PMF of
+  the NB distribution $f[k_{ij};\mu_{ij};\alpha_i]$
+  \item Write the likelihood function as a product of these $n$ terms
+    \begin{equation*}
+      L=\prod_{j=1}^n f[k_{ij};\mu_{ij};\alpha_i]=f[k_{ij};\beta_{0i}, \beta_{1i}, s_j, \alpha_i]
+    \end{equation*}
+  \item The function depends on $\beta_{0i}, \beta_{1i}, s_j$ and $\alpha_i$
+  \item One approach: Come up with some estimates of $s_j$ and $\alpha_i$ and
+    plug them into the likelihood
+  \item Pretend that these are the {\it true} values
+  \item Now the likelihood is only a function of $\beta_{0i}$ and $\beta_{1i}$
+  \end{itemize}
+\end{frame}
+
+
+
+%% \begin{frame}
+%% <<>>=
+%% set.seed(534)
+%% n=10
+%% b=rep(rnorm(n,0,0),each=5)
+%% p=exp(1+b)/(1+exp(1+b))
+%% x=rbinom(n*5,1,p)
+%% grp=rep(0:1,each=25)
+
+%% glm(x~grp,family="binomial")
+
+
+
+
+%% @   
+%% \end{frame}

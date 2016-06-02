@@ -1,0 +1,465 @@
+
+\begin{frame}{Two Approaches for Analysis of RNA-Seq}
+  \begin{itemize}
+    \item Two-stage method: Convert counts to "Expression" and then
+      use statistical methods for microarrays (e.g., t-test)
+      and then
+    \item One-stage method: Relate the counts directly to the phenotype
+    \item This is done through using statistical methods for modeling counts
+    \item We generally promote the latter approach for data analysis
+    \end{itemize}
+\end{frame}    
+\begin{frame}{DESeq for RNA-Seq}
+  \begin{itemize}    
+    \item The goal is to provide sufficient background to 
+          understand the DESeq method
+  \item We are not suggesting that DESeq is the best approach for analysis 
+    of RNA-Seq data
+  \item We are considering it in this course as one, of many other methods, that adhere to the one-stage approach principle
+  \item Added bonus: Nicely written {\tt R} extension package 
+        (important feature for teaching)
+  \item DESeq has many limitations (e.g., it cannot directly deal with quantitative and censored outcomes) 
+  \item Also some of the theoretical details 
+       (e.g., the effect of using plugin estimates for nuisance parameters)
+       have seemingly not been fully fleshed out
+  \end{itemize}
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}{Three Distributions for Count Data}
+  \begin{itemize}
+  \item RNA-Seq data are counts (not continuous measurements)
+  \item To properly model RNA-Seq data, we need to consider distributions
+        to model counts
+  \item We will consider three important distributions for counts:
+  \begin{itemize}
+  \item Binomial
+  \item Poisson
+  \item Negative Binomial
+  \end{itemize}
+  \item There are many other distributions for counts (e.g., geometric distribution) that will not be discussed
+   \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Distribution for Counts: Support}
+  \begin{itemize}
+  \item When considering a distribution of a count variable, we first have to determine its {\it support}
+  \item The support of the distribution consists of the values that could occur with positive probability
+  \item For example, if we toss a coin once and we count the number of heads, the support is $\{0,1\}$
+  \item If we flip it twice, the support is $\{0,1,2\}$
+  \item Why is 3 not in the support? How about -1?
+  \item These values are not {\it possible} (they have zero probability)
+  \end{itemize}
+\end{frame}
+\begin{frame}{Distribution for Counts: Probability Mass Function}
+  \begin{itemize}
+  \item Example: we toss a fair coin once and we count the number of heads (call it $K$)
+    \begin{equation*}
+      P(K=0) = \frac{1}{2} \mbox{ and } P(K=1) = \frac{1}{2}
+    \end{equation*}
+  and 
+   \begin{equation*}
+      P(K=k) = 0 
+    \end{equation*}
+  if $k$ is not 0 or 1
+  \item The probability mass function (PMF) determines the probability that $K$ assumes value $k$ in the support
+  \item Sometimes we use the terms "distribution" and "PMF" interchangeably
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Distribution for Counts: Probability Mass Function}
+  \begin{itemize}
+  \item Example: we toss a fair coin twice and we count the number of heads (call it $K$)
+    \begin{equation*}
+      P(K=0) = \frac{1}{4} \mbox{ and } P(K=1) = \frac{1}{2} \mbox{ and } P(K=2) = \frac{1}{4} 
+    \end{equation*}
+ \item Why?
+    \item Note that if once adds up $P(K=k)$ over all $k$ in the support the sum should be one
+      \begin{equation*}
+        \sum_{k} P(K=k) =1
+      \end{equation*}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Exercise: Support and PMF}
+  \begin{itemize}
+  \item we toss a biased coin twice and we count the number of heads (call it $K$)
+  \item the probability that any toss lands a head is $\pi=\frac{1}{3}$
+  \item What is the support of the distribution
+  \item What is the PMF
+  \item Repeat the last steps if $\pi$ is any arbitrary number (between 0 and 1 of course)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Exercise: Support and PMF}
+  \begin{itemize}
+  \item the support is as in the previous example $\{0,1,2\}$
+  \item Why is it unchanged
+    \begin{equation*}
+      P(K=0) = \frac{4}{9} \mbox{ and } P(K=1) = \frac{4}{9} \mbox{ and } P(K=2) = \frac{1}{9} 
+    \end{equation*}
+  \item More generally
+     \begin{equation*}
+      P(K=0) = (1-\pi)^2 \mbox{ and } P(K=1) = 2\pi(1-\pi) \mbox{ and } P(K=2) =\pi^2 
+    \end{equation*}
+  \end{itemize}
+  
+\end{frame}
+
+
+
+
+
+\begin{frame}{Flipping the coin}
+  \begin{itemize}
+  \item Throughout this discussing we will consider flipping
+        a coin
+  \item The coin lands a head with probability $\pi$ (could be biased) or tail with probability $1-\pi$
+  \item For convenience, we will recode H as 1 and T as 0
+  \item We will flip it $n$ times. 
+  \item Notation: 
+    \begin{itemize}
+    \item $n$ is to denote the number of {\it trials}
+    \item On any trial (or flip), if we land an H we will call it an 
+          event (or success)
+    \item or if we land a T we will call it a failure
+    \end{itemize}
+  \item RNA-seq connection: You can think of a read mapping to a gene to be an event
+   \end{itemize}
+\end{frame}
+
+\begin{frame}{Three Variants of the Coin Tossing Experiment}
+  \begin{enumerate}
+  \item Fix the number of trials ($n$) upfront and then toss the coin $n$ times
+    \begin{itemize}
+    \item The number of events (among $n$ trials) is random
+    \end{itemize}
+  \item Toss the coin a large number of times and assume that each one of these many trials has a small probability of being an event
+    \begin{itemize}
+    \item Here $n$ is large and $\pi$ is small (close to 0)
+    \end{itemize}
+  \item Fix the number of desired events upfront, then toss the coin repeatedly to achieve that number
+    \begin{itemize}
+    \item Here the number of trials $n$ is random
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+
+\begin{frame}{Example: Fixed $n$}
+  \begin{itemize}
+  \item We flip the coin $n=6$ times
+  \item Observed sequence: TTHTTH
+  \item We recode this as 001001
+  \item This corresponds to
+    \begin{itemize}
+    \item $n=6$ trials
+    \item $2$ events (or successes)
+    \item or equivalently $4$ failures
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Number of possible Outcomes}
+  \begin{itemize}
+  \item Example 1: Suppose that $n=2$
+     \begin{itemize}
+     \item 4 possible outcomes: $\{00,10,01,11\}$
+     \item $4=2\times 2 = 2^2$
+     \end{itemize}
+   \item Example 2: Suppose that $n=3$
+     \begin{itemize}
+     \item Eight possible outcomes: $\{000,100,101,001,110,011,101,111\}$
+     \item $8=2\times 2 \times = 2^3$
+     \end{itemize}
+   \item The number of possible outcomes based on $n$ trials is $2^n$
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Permutations of the integers 1 through $n$}
+  \begin{itemize}
+  \item $n=1: \{1\}$
+  \item $n=2: \{12,21\}$
+  \item $n=3: \{123,132,213,231,312,321\}$
+  \item The number of permutations of the integers $1,2,3,\ldots,n$ is $n!$
+  \item We say $n$ factorial
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Factorial Function}
+  \begin{itemize}
+  \item Integers are "whole" numbers $\ldots,-2,-1,0,1,2,\ldots$
+  \item Consider a non-negative integer $k$ ($0,1,2,\ldots$)
+  \item $0!=1$
+  \item $1!=1$
+  \item $2!=2\times 1 =2$
+  \item $3!=3\times 2 \times 1 =6$
+  \item $4!=4\times 3 \times 2 =24$
+  \item $\cdots$
+  \item $k!=k \times (k-1) \times (k-2) \times \ldots 3 \times 2 \times 1$
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Number of Permutations}
+  \begin{itemize}
+  \item Example 1: Suppose that $n=3$ and $k=1$
+     \begin{itemize}
+  \item We had 1 event among three trials
+  \item The three possible permutations are $\{001, 010, 100\}$
+  \end{itemize}
+   \item Example 2: Suppose that $n=4$ and $k=2$
+     \begin{itemize}
+     \item We had 2 events among four trials
+     \item The three possible permutations are $\{1100, 1010, 1001,0011,0101,0110\}$
+     \end{itemize}
+   \item What is the number of permutations for $k$ events amomg $n$ trials
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Number of Permutations}
+  \begin{itemize}
+  \item The number of possible permutations on the basis of $k$ events
+        among $n$ trials
+        \begin{equation*}
+          {n \choose k} = \frac{n!}{k! (n-k)!}
+        \end{equation*}
+  \item Example 1: Suppose that $n=3$ and $k=1$
+    \begin{equation*}
+       {3 \choose 1} =\frac{3!}{1! (2-1)!} = \frac{3\times 2 \times 1}{1 \times 2 \times 1} = 3
+    \end{equation*}
+    <<>>=
+choose(3,1)
+@ 
+   \item Example 2: Suppose that $n=4$ and $k=2$
+       \begin{equation*}
+     {4 \choose 2} =
+      \frac{4!}{2! (4-2)!} = \frac{4\times 3\times 2 \times 1}{2\times 1 \times 2 \times 1} = \frac{24}{4}=6
+    \end{equation*}  
+    <<>>=
+choose(4,2)
+@ 
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Bernoulli Distribution}
+  \begin{itemize}
+  \item Suppose that we toss the coin just once
+  \item In other words $n=1$
+  \item We say that the number of events follows  a Bernoulli distribution with
+        parameter $\pi$
+  \item The distribution is
+    \begin{equation*}
+      P[K=k] = \pi^k (1-\pi)^{1-k}, k=0,1
+    \end{equation*}
+  \end{itemize}
+<<>>=
+set.seed(12324)
+# Simulate 10 Bernoulli random variables with
+# parameter pi=0.5
+rbinom(10,1,0.5)
+# Simulate 5 Bernoulli random variables with
+# parameter pi=0.23
+rbinom(5,1,0.23)
+@   
+\end{frame}
+
+
+\begin{frame}[fragile]{Binomial Distribution}
+  \begin{itemize}
+  \item For the Bernoulli distribution $n=1$
+  \item More generally (when $n \ge 1$) the number of events $K$ is said to follow a Binomial distribution with
+        parameters $n$ and $\pi$
+  \item The distribution is
+    \begin{equation*}
+      P[K=k]={n \choose k} \pi^k (1-\pi)^{n-k},
+    \end{equation*}
+    $k=0,1,2,\ldots,n$
+\item Note that when $n=1$ the Binomial reduces to a Bernoulli distribution  
+  \end{itemize}
+<<>>=
+set.seed(12324)
+# Simulate 10 Binomial random variables with
+# parameter n=2 and pi=0.5
+rbinom(10,2,0.5)
+# Simulate 5 Binomial random variables with
+# parameter n=2 and pi=0.23
+rbinom(5,2,0.23)
+@   
+\end{frame}
+
+
+\begin{frame}[fragile]{Negative Binomial Distribution}
+  \begin{itemize}
+  \item How many times do you have to flip a coin to get
+        $r>0$ events
+  \item Model the number of {\it random} trials needed
+        to get $r$ events
+  \item This distribution is called the negative binomial distribution
+  \item The probability distribution is
+    \begin{equation*}
+       P[K=k] = {k+r-1 \choose r-1} \pi^r (1-\pi)^{k},
+    \end{equation*}
+    where $k=r,r+1,r+2,\ldots$
+ \end{itemize}
+<<>>=
+set.seed(13224)
+# Simulate the number of trials needed to get k=5 events
+rnbinom(10,5,0.1)
+@ 
+\end{frame}
+
+
+%% \begin{frame}[fragile]{Binomial Distribution: General Case}
+%%   \begin{itemize}
+%%   \item Suppose that $Y_1$ follows a Bernoulli distribution 
+%%         with parameter $\pi$
+%%   \item Suppose that $Y_2$ follows a Bernoulli distribution 
+%%         with parameter $\pi$
+%%   \item We say that $Y=Y_1+Y_2$ follows a Binomialdistribution with
+%%         parameter $n=2$ and $\pi$
+%%   \item Note that $Y$ is the number of successes among two trials
+%%   \end{itemize}
+%% <<>>=
+%% set.seed(12324)
+%% # Simulate 10 Binomial random variables with
+%% # parameter n=2 and pi=0.5
+%% rbinom(10,2,0.5)
+%% # Simulate 5 Binomial random variables with
+%% # parameter n=2 and pi=0.23
+%% rbinom(5,2,0.23)
+%% @   
+%% \end{frame}
+
+
+\begin{frame}[fragile]{Poisson Distribution}
+  \begin{itemize}
+  \item The number of rare events ($\pi$ is small) among this large number of trials
+        follows a Poisson distribution
+  \item The probability distribution is
+    \begin{equation*}
+      P[K=k] = \frac{e^{-\lambda} \lambda^k}{k!},
+    \end{equation*}
+   where $k=0,1,2,\ldots$
+    \end{itemize}
+<<>>=
+set.seed(13224)
+# Simulate 10 Poisson variates with m
+rpois(10,0.1)
+@ 
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Relationship between Binomial and Poisson Distribution}
+  \begin{itemize}
+  \item Consider tossing the coin a large number of times
+<<>>=
+n=1000000
+p=1/n
+@   
+\item Note that we have $n=\Sexpr{n}$ trials with a low success probability
+  of $p=\Sexpr{p}$
+\item The expected number of events among these \Sexpr{n} trials is
+  $n\times p=\Sexpr{n*p}$. Why?
+
+\item Now simulate \Sexpr{as.integer(B9)} numbers from this binomial distribution
+<<>>=
+set.seed(9988)
+x=rbinom(B9,n,p)
+length(x)
+@ 
+\item What is the expected number of events (i.e., the expected number of 
+  events (among $n$ trials) across $B=\Sexpr{as.integer(B9)}$ simulations)?
+<<>>=
+mean(x)
+@ 
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Relationship between Binomial and Poisson Distribution}
+  \begin{itemize}
+\item Now compare the empirical distributions to the Poisson distributions
+<<>>=
+round(dpois(0:7,lambda=1),3)
+round(table(x)/B9,3)
+@ 
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}{Mean and Variance of Negative Binomial}
+  \begin{itemize}
+  \item A negative binomial distribution can be parameterized in terms of
+    \begin{itemize}
+    \item $r$ and $p$
+    \item or $\mu$ and $\sigma^2$
+    \item or $\mu$ and a dispersion parameter $\alpha$ (more on this later)
+    \end{itemize}
+  \item The relationship between these two parametrizations is given by
+    \begin{equation*}
+      \mu=r\frac{1-p}{p}\mbox{ and } \sigma^2=r\frac{1-p}{p^2},
+    \end{equation*}
+    and
+    \begin{equation*}
+      p=\frac{\mu}{\sigma^2} \mbox{ and } r=\frac{\mu^2}{\sigma^2-\mu}
+    \end{equation*}
+  \item If you provide $r$ and $p$, you can calculate $\mu$
+        and $\sigma^2$
+  \item Or, if you provide $\mu$ and $\sigma^2$, you can recover
+        $r$ and $p$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Negative Binomial PMF in terms of $\mu$ and $\alpha$}
+  \begin{itemize}
+  \item The NB PMF parametrized in terms of $p$ and $r$ 
+    (the number of events) is
+    \begin{equation*} 
+    P[K=k] = {k+r-1 \choose r-1} \pi^r (1-\pi)^{k},
+    \end{equation*}
+    where $k=r,r+1,r+2,\ldots$
+  
+
+  \item The NB PMF parametrized in terms of the mean $\mu$ and the dispersion
+        parameter $\alpha$ is
+        \begin{equation*}
+           P[K=k]=\frac{\Gamma[k+\alpha^{-1}]}{\Gamma[\alpha^{-1}]\Gamma[k+1]}
+             \bigg(\frac{1}{1+\mu\alpha}\bigg)^{\alpha^{-1}}
+             \bigg(\frac{\mu}{\alpha^{-1}+\mu}\bigg)^k,
+        \end{equation*}
+     where $k=0,1,\ldots$
+   \item The variance is $\mu ( 1+\alpha\mu)$
+   \item As $\alpha$ shrinks to 0 (no-dispersion), the distribution becomes Poisson 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Means and Variances}
+  \begin{table}
+    \centering
+    \begin{tabular}{|l|l|l|l|}\hline
+      Distribution&Support&Mean&Variance\\\hline\hline
+      Bernoulli($\pi$)&0,1&$\pi$&$\pi(1-\pi)$\\\hline
+      Binomial($n,\pi$)&$0,1,\ldots,n$&$n\pi$&$n\pi(1-\pi)$\\\hline
+      Poisson($\lambda$)&$0,1,2,\ldots,$&$\lambda$&$\lambda$\\\hline
+      NB($p,r$)&$r,r+1,r+2,\ldots,$&$r\frac{1-p}{p}$&$r\frac{1-p}{p^2}$\\\hline\hline
+    \end{tabular}
+  \end{table}
+\end{frame}

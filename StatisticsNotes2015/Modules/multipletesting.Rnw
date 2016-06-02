@@ -1,0 +1,670 @@
+\begin{frame}[fragile]{Multiple Testing: Motivation}
+  \begin{itemize}
+  \item Flip a single coin from a large batch of newly minted coins 10 times
+  \end{itemize}
+<<m1,echo=FALSE>>=
+set.seed(231)
+x=sample(c("H","T"),10,replace=TRUE,prob=c(1/3,2/3))
+x
+@
+\begin{itemize}
+\item Is this a biased coin?
+\end{itemize}
+<<m2,echo=FALSE>>=
+binom.test(sum(x=='T'), n=length(x), p = 0.5)
+@ 
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Multiple Testing: Motivation}
+  \begin{itemize}
+  \item Flip two coins each 10 times
+  \end{itemize}
+<<echo=FALSE>>=
+set.seed(231)
+x1=sample(c("H","T"),10,replace=TRUE,prob=c(1/3,2/3))
+x2=sample(c("H","T"),10,replace=TRUE)
+x1
+x2
+@
+\begin{itemize}
+\item Are any of the two coins biased?
+\end{itemize}
+<<>>=
+binom.test(sum(x1=='T'), n=length(x), p = 0.5)
+binom.test(sum(x2=='T'), n=length(x), p = 0.5)
+@
+<<echo=FALSE>>=
+rm(x1,x2,x)
+@ 
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{Multiple Testing}
+  \begin{itemize}
+      \item We have previously considered testing for significance of a single gene
+      \item The analysis of high-dimensional data, including array and sequencing data,
+            is concerned with testing the significance of multiple loci/genes
+            \begin{itemize}
+            \item Microarray : 20,000-50,000 probe sets
+            \item GWAS:        500,000-5,000,000 typed SNPs
+            \item RNA-Seq:     22,000 genes (humans), ? genes (ecoli)
+            \end{itemize}
+      \item Let $m$ denote the number of genes (or SNPs) to be tested
+      \item Rather than testing a single hypothesis, we are concerned with testing multiple hypotheses
+      \item The decision rule must now account for testing $m$ hypotheses  simultaneously (multiple testing)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Hypothesis Notation}
+  \begin{itemize}
+  \item Gene $j$ (among the $m$ genes) is either associated with the outcome or not
+  \item The truth is unknown to us                                     
+  \item The null hypothesis for gene $j$ is denoted by $H_j$ (gene $j$ is 
+  \item $H_j$: gene $j$ is not associated with the outcome of interest
+  \item The alternative hypothesis is denoted by $\bar{H}_j$
+  \item $\bar{H}_j$: gene $j$ is associated with the outcome of interest
+  \item Suppose that we only test a single gene, say gene $j$, among the $m$
+        genes
+  \item Let $p_j$ (lower case p) denote the corresponding {\it P}-value
+  \item $p_j$ is called the {\it marginal}
+        or {\it unadjusted} {\it P}-value
+  \item 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Unadjusted vs Adjusted {\it P}-values}
+  \begin{itemize}
+  \item Suppose that we only test a single gene, say gene $j$, among the $m$
+        genes
+  \item Let $p_j$ (lower case p) denote {\it P}-value corresponding to $H_j$
+  \item $p_j$ is called the {\it marginal} or {\it unadjusted} {\it P}-value
+  \item If $m$ hypotheses are tested, inference on $H_j$ on the basis of
+        $p_j$ is inappropriate
+  \item The {\it P}-value for $H_j$ has to account for testing the other $m-1$ hypotheses
+  \item We will denote the {\it adjusted} {\it P}-value by  $P_j$ (upper case P)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Additional Notation}
+  \begin{itemize}
+  \item Suppose that gene $j$ is not associated with the outcome of interest ($H_j$ is true)
+  \item Then
+    \begin{itemize}
+    \item Decision rule rejects $\to$ False-Positive (FP) 
+    \item Decision rule fails to reject $\to$ True-Negative (TN) 
+    \end{itemize}
+  \item Suppose that gene $j$ is associated with the outcome of interest ($H_j$ is false)
+  \begin{itemize}
+    \item Decision rule rejects $\to$ True-Positive (TP) 
+    \item Decision rule fails to reject $\to$  False-Negative (FN) 
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{Summarizing a Multiple Testing Procedure}
+  \begin{itemize}
+\item The results from any multiple testing procedure can be summarized
+      as the following table
+  \begin{center}
+  \begin{tabular}{r|c|c|c}
+    & Accept & Reject & Total \\
+   \cline{1-4}
+  Truth Null & $A_0$ & $R_0$ & $m_0$ \\
+  \cline{1-4}
+  Alt. & $A_1$ & $R_1$ & $m_1$ \\
+  \cline{1-4} 
+    & $A$ & $R$ & $m$
+  \end{tabular}
+  \end{center}
+  \item Notation:
+    \begin{itemize}
+    \item $m$: Number of tests, $m_0,m_1$ number of null/true genes
+    \item $R$: Number of genes rejected according to the decision rule
+    \item $A$: Number of genes accepted according to the decision rule
+    \item $R_0/R_1$ number of TN/FP
+    \item $A_0/A_1$ number of FN/TP
+    \end{itemize}
+    
+    \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Example}
+  \begin{itemize}
+  \item Results from an analysis based on $m=10$ genes:  
+<<echo=FALSE>>=
+pval=c(0.2907, 0.6163, 0.7059, 0.01641, 0.2515, 0.5845, 0.2289, 0.1263,0.2608, 0.9036)
+truth=c(0,1,1,0,0,0,0,1,0,0)
+pval[3]=0.0032
+pval[10]=0.0498
+dat=data.frame(gene=paste("gene",1:10,sep=""),truth,pvalue=signif(pval,4))
+print(dat)
+rm(pval)
+m0=sum(dat[["truth"]]==0)
+m1=sum(dat[["truth"]]==1)
+R0=sum(dat[["pvalue"]]<0.05&dat[["truth"]]==0)
+R1=sum(dat[["pvalue"]]<0.05&dat[["truth"]]==1)
+A0=sum(dat[["pvalue"]]>=0.05&dat[["truth"]]==0)
+A1=sum(dat[["pvalue"]]>=0.05&dat[["truth"]]==1)
+@   
+\item Investigator decides to use following decision rule:
+  Any gene with a corresponding unadjusted {\it P}-value of less than 0.05 will
+  be rejected.
+  \item Note:
+    \begin{itemize}
+ \item $m_0=\Sexpr{m0}$ and $m_1=\Sexpr{m1}$ 
+  
+  \item $R=\Sexpr{R0+R1}$ will be rejected based on the decision rule
+  \item Consequently $A=m-R=\Sexpr{m0+m1-R0-R1}$ will be accepted
+  \item $R_0=\Sexpr{R0},R_1=\Sexpr{R1}, A_0=\Sexpr{A0}$ and $A_1=\Sexpr{A1}$
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Example: Fill in the 2x2 table}
+ \begin{center}
+  \begin{tabular}{r|c|c|c}
+    & Accept & Reject & Total \\
+   \cline{1-4}
+  Truth Null  & $A_0=\Sexpr{A0}$ & $R_0=\Sexpr{R0}$ & $m_0=\Sexpr{m0}$ \\
+  \cline{1-4}
+    Alt. & $A_1=\Sexpr{A1}$ & $R_1=\Sexpr{R1}$ & $m_1=\Sexpr{m1}$ \\
+  \cline{1-4} 
+    & $A=\Sexpr{A0+A1}$ & $R=\Sexpr{R0+R1}$ & $m=\Sexpr{m0+m1}$
+  \end{tabular}
+  \end{center}
+ 
+\end{frame}
+
+\begin{frame}[fragile]{The Truth}
+  \begin{itemize}
+  \item What know or observe is this
+<<echo=FALSE>>=
+dat[,-2]
+@ 
+\item and not (truth colum is not known to us):
+<<>>=
+dat
+@ 
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Example: Fill in the 2x2 table (based on what we observe)}
+   \begin{itemize}
+     \item We can only fill in the bottom row of the table
+        \begin{center}
+          \begin{tabular}{r|c|c|c}
+            & Accept & Reject & Total \\
+            \cline{1-4}
+            Truth Null  & $A_0$ & $R_0$ & $m_0$ \\
+            \cline{1-4}
+            Alt. & $A_1$ & $R_1$ & $m_1$ \\
+            \cline{1-4} 
+            & $A=\Sexpr{A0+A1}$ & $R=\Sexpr{R0+R1}$ & $m=\Sexpr{m0+m1}$
+     \end{tabular}
+   \end{center}
+ \item The remaining quantities are fixed unknown quantities or unobservable random variables.
+   \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{Framework of multiple testing}
+  \begin{center}
+  \begin{tabular}{r|c|c|c}
+    & Accept & Reject & Total \\
+   \cline{1-4}
+  Truth Null  & $A_0$ & $R_0$ & $m_0$ \\
+  \cline{1-4}
+    Alt. & $A_1$ & $R_1$ & $m_1$ \\
+  \cline{1-4} 
+    & $A$ & $R$ & $m$
+  \end{tabular}
+  \end{center}
+ 
+  \begin{itemize}
+    \item $m$ is a known constant 
+    \item $m_0$ and $m_1$ are unknown constants
+    \item $R$ and $A$ are determined on the basis of applying the decision rule to the data
+    \item They are {\it observable} random quantities
+    \item The true states of the genes of the genes are unknown
+    \item $A_0,A_1,R_0$ and $R_1$ are  {\it unobservable} random quantities
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Framework versus Method}
+  \begin{itemize}
+    \item To account for multiple testing one has to first decide on a framework and then
+          on a method
+    \item {\Large Framework:} The quantity that we aim to control
+    \item {\Large Method:} statistical procedure used to for estimating or controlling the error 
+      rate for a set of hypothesis tests.
+    \item Example: Investment 
+      \begin{itemize}
+      \item What is the objective: capital preservation or growth
+      \item Approach: Index funds, individual stocks, CDs, money under mattress
+      \end{itemize}
+   \item: When thinking of multiple testing, first decide what the framework is and then
+          decide on an appropriate strategy
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Family-wise Error Rate (FWER)}
+  \begin{itemize}
+  \item What is the probability to commit at least one false-rejection (among m) given that 
+        {\it all} genes are null
+  \item What is the the probability of the event $R\ge 1$ if $m=m_0$
+  \item $\mathrm{FWER}=P(R\ge 1|m=m0)$
+  \item Note that when $m=1$ (single gene), this definition is identical to the tyep I error
+        we have previously considered
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Bonferroni}
+  \begin{itemize}
+  \item A simple method for controlling FWER is called the Bonferroni method
+  \item To control the type I error of the experiement at the 
+        $\alpha$ level, test each gene at the $\frac{\alpha}{m}$ level
+  \item The Bonferroni adjusted {\it P-value} is defined as
+    \begin{equation*}
+      P_j=m \times p_j
+    \end{equation*}
+  \item Technical note: $P_j$ is defined above could be larger than 1 so a more technically rigorous definition is
+    \begin{equation*}
+      P_j=\min\{m \times p_j,1\}
+    \end{equation*}
+  \item In other words, if $m \times p_j$ is larger than 1, then truncate $P_j$ at 1.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{False Discovery Rate (FDR)}
+  \begin{itemize}
+  \item In the FWER framwork, the objective is to control $\mathrm{FWER}=P(R\ge 1|m=m0)$
+  \item This is the probability of at least one false-discovery when none of the genes are true.
+  \item Consider the quantity $\frac{R_0}{R}$
+  \item This is the proportion of of false discoveries among the genes rejected
+  \item This is an {\it unobservable} random quantity (As $R_0$ is not observable)
+   \item In the FDR framework is based on controlling the {\it expected} value of this ratio
+    \item The FDR is defined as $E[\frac{R_0}{R}]$
+    \item Note that when $m_0=m$ (none of the genes are true), FWER=FDR
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Methods for the FDR Framework}
+  \begin{itemize}
+  \item An early method proposed to control FDR, is a method due to
+        Benjamini and Hochberg (BH; JRSBB 1985)
+  \item One of the assumptions for the BH method is that of independence
+        among the genes
+  \item That assumption may be questionable (due to co-regulation among genes)
+  \item A more recent approach is due to Storey
+  \item The adjusted {\it P}-values calculated based on Storey's method
+        are called {\it Q}-values
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Genome-wide Significance}
+  \begin{itemize}
+  \item In GWAS papers, $\alpha=5\times 10^{-8}$ is typically considered
+        the threshold for genome-wide significance
+  \item It is based on a Bonferroni correction: If you consider testing $m=1,000,000$
+        SNPs at the FWER level of 0.05, then each SNP should be tested at the
+        \begin{equation*}
+          \alpha=\frac{0.05}{1,000,000} = 5\times 10^{-8},
+        \end{equation*}
+        level
+  \item Suppose that the unadjusted {\it P}=value for a SNP is $5\times 10^{-7}$
+  \item Is this "reaching" genome-wide significance?
+  \item The term "suggestive" is also used
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{"Reaching" Genome-wide Significance}
+  \begin{itemize}
+  \item Suppose that the $m=1,000,000$ SNPs are independent
+  \item The adjusted {\it P}-value is
+     \begin{equation*}
+          P=5\times 10^{-7} \times m = 5\times 10^{-7} \times 10^6 = 0.5,
+        \end{equation*}
+  \item This is off by an order of magnitude ($0.5=0.05 \times 10$)
+  \item It is not "reaching"
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Summary of Multiple Testing}
+\begin{itemize}
+  \item Multiple testing {\em must} be accounted for when testing for associations in the context of high-dimensional data
+  \item FWER and FDR are the two common frameworks for quantifying error
+   
+  \item Error rate estimates can be used to compute 'adjusted' p-values
+   
+  \item Resampling-based methods can increase power in controlling error when sample sizes are sufficient
+    for their use.
+  \item When large-scale patterns of differential expression are observed, it is important to consider if 
+    such effects are biologically reasonable, and if technical factors can be attributed to the variation.
+      \end{itemize}
+
+\end{frame}
+
+
+
+%% \begin{frame}
+%%   \frametitle{Family-wise Error Rate (FWER)}
+  
+%%   \begin{center}
+%%   \begin{tabular}{r|c|c|c}
+%%     & Accept & Reject & Total \\
+%%    \cline{1-4}
+%%   Truth Null & $A_0$ & $R_0$ & $m_0$ \\
+%%   \cline{1-4}
+%%         Alt. & $A_1$ & $R_1$ & $m_1$ \\
+%%   \cline{1-4} 
+%%     & $A$ & $R$ & $m$
+%%   \end{tabular}
+%%   \end{center}
+%%   \vskip5mm
+%%   \begin{itemize}
+%%     \item Defined as the probability of at least one false positive test result
+%%       \begin{equation*}
+%%     \mbox{FWER} = \mbox{Pr}(R_0 > 0)
+%%       \end{equation*}
+%%       \vskip2mm
+%%     \item Because $R_0$, is unobservable, $FWER$ is unknown and therefore {\em estimated} or
+%%       {\em controlled} in a given experiment.
+%%       \vskip4mm
+%%     \item Becomes a more stringent criterion as $m$ increases 
+%%   \end{itemize}
+%% \end{frame}
+  
+
+
+%% \begin{frame}
+%%   \frametitle{Methods for controlling the FWER}
+%%   \begin{itemize}
+%%     \item Bonferroni correction \\
+%%   \begin{equation*}
+%%     \mbox{adjusted p:     } \tilde{p}_j = \min(m \cdot p_j, 1)  
+%%   \end{equation*}      \vskip2mm
+%%     \item Holm's step-down method\\
+%%   \begin{equation*}      
+%%     \mbox{adjusted p:     } \tilde{p}_{r_j} = \max_{k : 1, \ldots , j} \biggl[ 
+%%      \min((m - k + 1) \cdot p_{r_k}, 1) \biggr]        
+%%    \end{equation*}
+%%   \vskip2mm
+%%     \item Westfall-Young maxT method 
+%%       \vskip2mm
+%%       Resampling-based procedure that requires ${\bf X}$ and $Y$
+%%   \end{itemize}
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Aside: Correlation among genes}
+%%   \begin{itemize} 
+%%     \item {\em Many} of the traditional statistical approaches that are taken
+%%       in the analysis of microarrays (and other 'omics data) make an
+%%       implicit assumption of independence among genes under the global null.
+%%            \vskip5mm     
+%%     \item In differential expression, it can be stated as an assumption all
+%%           test statistics are independent and identically distributed under the null.
+%%           \begin{eqnarray}
+%%              H_0: \; \; T_1, \; T_2, \; \ldots \; , \; T_m \; \; 
+%%              \mbox{are {\em i.i.d.}  with} \; \; T_i \sim  F_0(t)  \nonumber
+%%           \end{eqnarray}
+%%            \vskip2mm     
+%%     \item However, the scientific basis of microarrays is that genes are
+%%       \alert{co-regulated} by biological processes - {\em even when these processes
+%%       are independent of the association of interest}.
+%%     \vskip5mm
+%%     \item These data serve as the basis for identifying gene clusters, pathways and 
+%%       ontologies (all to come).
+%%       \end{itemize}
+%%   \end{frame}
+      
+%% \begin{frame}
+%%   \frametitle{Methods for controlling the FDR}
+%%   \begin{itemize}
+%%     \item Benjamini-Hochberg step-up \\
+%%   \begin{equation*}
+%%     \mbox{adjusted p:     } \tilde{p}_{r_j} = \min_{k : j, \ldots , m} \biggl[ 
+%%      \min((m - k + 1) \cdot p_{r_k}, 1) \biggr]  
+%%   \end{equation*}
+%%       \vskip2mm
+%%     \item Storey q-value (SAM)
+%%      \begin{equation*}
+%%     \widehat{FDR}(\alpha) = \frac{\hat{m}_0 \cdot \alpha}{R(\alpha)} 
+%%   \end{equation*}   
+%%       \vskip2mm
+%%     \item Benjamini-Yekutieli 
+%%       \vskip2mm
+%%       Resampling-based procedure that requires ${\bf X}$ and $Y$
+%%   \end{itemize}
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Example: Beer data set}
+%% In the earlier example of lung adenocarcinoma (Beer {\em et al.}), survival analysis was used to 
+%% identify differentially expressed genes associated with clinical outcome.
+%% \vskip5mm 
+%% Tests for all $m = 7129$ probe sets can be summarized by tabulating genes ordered by the
+%% degree of association. {\em I.e. genelist}
+%% \vskip 5mm
+%%     \begin{center}    {\scriptsize
+%%     \begin{tabular}{|l|r|r|r|r|} \hline
+%%      & {\bf  PROBESET}  & {\bf  GENE } & {\bf X.STAT  }  & {\bf PVAL} \\ \hline
+%% 1 &    L34838\_at &   INSL4 &  38.28  &  6e-10\\
+%% 2 &    U33147\_at & SCGB2A2 &  24.80 &   6e-07\\
+%% 3 &  X03363\_s\_at &   ERBB2 &  20.46  &  6e-06\\
+%% 4 &    K03195\_at &  SLC2A1 &  20.44  &  6e-06\\
+%% 5 &    U33017\_at &  SLAMF1 &  18.38  &  2e-05\\
+%% 6 &    D14874\_at &     ADM &  18.12  &  2e-05\\
+%% 7  &   X16901\_at &  GTF2F2 &  17.35  &  3e-05\\
+%% 8 &    U81607\_at &  AKAP12 &  16.73 &   4e-05\\
+%% 9 &    Y08564\_at &    <NA> &  16.13 &   6e-05\\
+%% 10 & U49957\_s\_at &     LPP &  14.92 & 0.00011\\\hline
+%%     \end{tabular} 
+%%     }
+%%     \end{center}
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Example: Beer data set}
+%%   A histogram of the 7129 p-values is indicative of the extent of differential expression. 
+%%   \begin{center}
+%%   \vspace{-5mm}
+%%   \includegraphics[width=60mm,height=50mm,trim=0in 0in 0in 0.5in,clip]{Figures/HistBeer.pdf}
+%%   \end{center}
+%% 686 genes are observed to have {\em nominal} $p < 0.05$ 
+%% \end{frame}
+
+
+%% \begin{frame}
+%%   \frametitle{Example: Beer data set  }
+%% Using the {\em multtest} package in Bioconductor, adjusted p-values are computed to control 
+%% \begin{itemize}
+%%   \item FWER - Holm's step-down 
+%%   \item FDR - Benjamini-Hochberg step-up
+%%     \end{itemize}
+%% \vskip2mm
+%%     \begin{center}    {\scriptsize
+%%     \begin{tabular}{|l|r|r|r|r|r|r|} \hline
+%%      & {\bf  PROBESET}  & {\bf  GENE } & {\bf X.STAT  }  & {\bf PVAL}& {\bf ADJP.FDR}& {\bf ADJP.FWER} \\ \hline
+%% 1 &  L34838\_at  & INSL4 &38.28 & 6e-10  &  4e-06 &   4e-06\\
+%% 2 &  U33147\_at  &SCGB2A2&24.80 & 6e-07  & 0.0023 &  0.0045\\
+%% 3 &X03363\_s\_at & ERBB2 &20.46 & 6e-06  &  0.011 &  0.0434\\
+%% 4 &  K03195\_at  &SLC2A1 &20.44 & 6e-06  &  0.011 &  0.0438\\
+%% 5 &  U33017\_at  &SLAMF1 &18.38 & 2e-05  & 0.0246 &  0.1289\\
+%% 6 &  D14874\_at  &   ADM &18.12 & 2e-05  & 0.0246 &  0.1478\\
+%% 7 &  X16901\_at  &GTF2F2 &17.35 & 3e-05  & 0.0317 &  0.2215\\
+%% 8 &  U81607\_at  &AKAP12 &16.73 & 4e-05  & 0.0384 &  0.3069\\
+%% 9 &  Y08564\_at  &  <NA> &16.13 & 6e-05  & 0.0468 &  0.4211\\
+%% 10& U49957\_s\_at&   LPP &14.92 & 0.00011& 0.0773 &  0.7986\\\hline
+%%     \end{tabular} 
+%%     }
+%%     \end{center}
+%% \end{frame}
+
+
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Example: AML versus ALL }
+%% For the Golub dataset, Welch t-tests were used to 
+%% identify differentially expressed genes between leukemia subtypes.
+
+%% {\scriptsize 
+%% \begin{verbatim}
+%%      > library(golubEsets); library(affy)
+%%      > data(Golub_Merge)
+%%      > 
+%%      > data <- exprs(Golub_Merge)
+%%      > pheno <- pData(Golub_Merge)$ALL.AML
+%%      > table(pheno)
+%%      pheno
+%%      ALL AML 
+%%       47  25 
+%%      > 
+%%      > get.t <- function(x,y) t.test(x[y],x[!y])$statistic
+%%      > get.p <- function(x,y) t.test(x[y],x[!y])$p.value
+%%      > 
+%%      > t.vec <- apply(data,1,get.t,pheno=="ALL")
+%%      > p.vec <- apply(data,1,get.p,pheno=="ALL")
+%%      > 
+%%      > results <- data.frame(STAT     = t.vec,
+%%      +                       PVAL     = p.vec)
+%%      > 
+%%      > results <- results[order(results$PVAL),]
+%% \end{verbatim}
+%% }
+%% \end{frame}
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Example: AML versus ALL}
+%% {\scriptsize 
+%% \begin{verbatim}
+%%      > library(multtest)
+%%      > adj.p.FDR <- mt.rawp2adjp(results$PVAL, "BH")$adjp[,2]
+%%      > adj.p.FWER <- mt.rawp2adjp(results$PVAL, "Holm")$adjp[,2]
+%%      >
+%%      > res.p.FWER <- mt.maxT(data, pheno=="ALL", B = 1000)$adjp
+%% \end{verbatim}
+%% \vskip2mm
+%%     \begin{center}   
+%%     \begin{tabular}{|l|r|r|r|r|r|} \hline
+%%  {\bf  PROBESET}  & {\bf T.STAT  }  & {\bf PVAL} & {\bf ADJ.P.FDR} & {\bf ADJ.P.FWER} & {\bf RES.P.FWER} \\ \hline
+%%          X59417\_at & 8.89 & 3e-12 & 2e-08 & 2e-08 & 0.001\\
+%%          M92287\_at & 8.83 & 6e-12 & 2e-08 & 5e-08 & 0.001\\
+%%          M31523\_at & 8.73 & 1e-11 & 3e-08 & 8e-08 & 0.001\\
+%%       M31211\_s\_at & 7.99 & 2e-11 & 4e-08 & 1e-07 & 0.001\\
+%%    U05259\_rna1\_at & 8.44 & 4e-11 & 6e-08 & 3e-07 & 0.001\\
+%% M84371\_rna1\_s\_at & 8.12 & 5e-11 & 6e-08 & 3e-07 & 0.001\\
+%%          J05243\_at & 7.87 & 8e-11 & 9e-08 & 6e-07 & 0.001\\
+%%          M11722\_at & 7.99 & 2e-10 & 2e-07 & 2e-06 & 0.001\\
+%%          M89957\_at & 7.73 & 3e-10 & 2e-07 & 2e-06 & 0.001\\
+%%          S50223\_at & 7.43 & 3e-10 & 2e-07 & 2e-06 & 0.001\\\hline
+%%     \end{tabular} 
+%%     \end{center}
+%%     }
+%% \end{frame}
+
+
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Example: AML versus ALL}
+%%   \begin{center}
+%%   \includegraphics[width=60mm,height=50mm,trim=0in 0in 0in 0.75in,clip]{Figures/AdjpFWER.pdf}
+%%   \end{center}
+%%   Even though the resampling based adjustments to FWER are bounded by the number of permutations
+%%   ($B = 1000$), the Westfall-Young method is more powerful than those that ignore correlation. 
+%% \end{frame}
+  
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Example: AML versus ALL}
+%% \begin{columns}
+%% \column{50mm}
+%% \begin{verbatim} 
+%% > hist(results$p.val)
+
+
+
+%% > sum(results$PVAL < 0.05)
+%% [1] 2046
+%% > sum(adj.p.FDR < 0.05)
+%% [1] 1056
+%% > sum(res.p.FWER < 0.05)
+%% [1] 172
+%% \end{verbatim}
+%%   \column{60mm}
+%%   \begin{center}   
+%%   \includegraphics[width=50mm,height=50mm,trim=0in 0in 0in 0.75in,clip]{Figures/HistGolub.pdf}
+%%   \end{center}
+%% \end{columns}
+%% \vskip10mm
+%% However, the extent of differential expression observed (greater than 28\% of genes with $p < 0.05$)
+%% raises questions about the data set. 
+%% \end{frame}
+
+
+%% \begin{frame}
+%%   \frametitle{Example: AML versus ALL }
+%%   PCA plot of global patterns of expression in the Golub data
+%%    \begin{center}
+%%   \includegraphics[width=80mm,height=80mm,trim=0in 0in 0in 0.5in,clip]{Figures/Scatter1Golub.pdf}
+%%   \end{center}
+
+
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Example: AML versus ALL }
+%%   PCA plot of global patterns of expression in the Golub data
+%%    \begin{center}
+%%   \includegraphics[width=80mm,height=80mm,trim=0in 0in 0in 0.5in,clip]{Figures/Scatter2Golub.pdf}
+%%   \end{center}
+
+
+%% \end{frame}
+
+%%   \begin{frame}
+%%   \frametitle{Example: AML versus ALL }
+%%  \begin{center}    
+%%     \begin{tabular}{|l|c|c|} \hline
+%%      & {\bf  ALL}  & {\bf  AML} \\ \hline 
+%%   CALGB   &  0 & 15\\
+%%   CCG     &  0 &  5\\
+%%   DFCI    & 44 &  0\\
+%%   St-Jude &  3 &  5\\\hline
+%%   \end{tabular}
+%%     \end{center}
+%%  \vskip5mm
+%%   Due to confounding of tumor subtype and source, we can not distinguish whether differential
+%%   expression derives from \\
+%%   \begin{itemize}
+%%     \item biological features\\
+%%   or 
+%%   \item technical artifacts from the collection 
+%%   and processing of the biospecimen.
+%%   \end{itemize}
+%% \end{frame}
+

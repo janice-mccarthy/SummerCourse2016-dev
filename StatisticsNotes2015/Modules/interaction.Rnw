@@ -1,0 +1,213 @@
+\begin{frame}{Example 1: No Interaction}
+<<fig=TRUE,echo=FALSE>>=
+plot(c(0,0,1,1),c(1,2,1,2),axes=FALSE,pch=19,xlab="Treatment",ylab="Mean of Y",col=c("red3","blue3","red3","blue3"),ylim=c(0,3))
+legend("topright",legend=c("KO","WT"),col=c("red3","blue3"),pch=19)
+axis(1,at=c(0,1),labels=c("no trt","trt"))
+lines(c(0,1),c(1,1),lty=2)
+lines(c(0,1),c(2,2),lty=2)
+
+
+@   
+\end{frame}
+
+\begin{frame}{Example 2: No Interaction}
+<<fig=TRUE,echo=FALSE>>=
+plot(c(0,0,1,1),c(0,1,1,2),axes=FALSE,pch=19,xlab="Treatment",ylab="Mean of Y",col=c("red3","blue3","red3","blue3"),ylim=c(0,3))
+legend("topright",legend=c("KO","WT"),col=c("red3","blue3"),pch=19)
+axis(1,at=c(0,1),labels=c("no trt","trt"))
+lines(c(0,1),c(0,1),lty=2)
+lines(c(0,1),c(1,2),lty=2)
+@   
+\end{frame}
+
+
+\begin{frame}{Example 3: Interaction}
+<<fig=TRUE,echo=FALSE>>=
+plot(c(0,0,1,1),c(0,1,1,3),axes=FALSE,pch=19,xlab="Treatment",ylab="Mean of Y",col=c("red3","blue3","red3","blue3"),ylim=c(0,4))
+legend("topright",legend=c("KO","WT"),col=c("red3","blue3"),pch=19)
+axis(1,at=c(0,1),labels=c("no trt","trt"))
+lines(c(0,1),c(0,1),lty=2)
+lines(c(0,1),c(1,3),lty=2)
+@   
+\end{frame}
+
+
+
+
+\begin{frame}{Model Interaction}
+  \begin{itemize}
+  \item $Y$ denotes the gene expression
+  \item Let $x$ denote the treatment indicator
+    \begin{itemize}
+    \item $x=0$ if not treated or 1 if treated
+    \end{itemize}
+  \item Let $z$ denote the knock-out indicator
+    \begin{itemize}
+    \item $z=0$ is WT or 1 otherwise
+    \end{itemize}
+  \item The expected value of $Y$ given treatment indicator $x$ and knock out
+       indicator $z$ is denoted by
+       \begin{equation*}
+         \mu_{x,z}=E[Y|X=x,Z=z]
+       \end{equation*}
+  \item The model will be
+    \begin{equation*}
+      Y=  \mu_{x,z} + \epsilon
+    \end{equation*}
+    where $\epsilon$ is a the measurement error
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Example 1: Linear Model for No Interaction}
+  \begin{equation*}
+    Y=\beta_0 + \beta_1 z + \epsilon \mbox{ $(\beta_2=0)$}
+  \end{equation*}
+<<fig=TRUE,echo=FALSE>>=
+plot(c(0,0,1,1),c(1,2,1,2),axes=FALSE,pch=19,xlab="Treatment",ylab="Mean of Y",col=c("red3","blue3","red3","blue3"),ylim=c(0,3))
+legend("topright",legend=c("KO","WT"),col=c("red3","blue3"),pch=19)
+axis(1,at=c(0,1),labels=c("no trt","trt"))
+lines(c(0,1),c(1,1),lty=2)
+lines(c(0,1),c(2,2),lty=2)
+@   
+\end{frame}
+
+
+\begin{frame}{Example 2: No Interaction}
+   \begin{equation*}
+    Y=\beta_0 + \beta_1 z + \beta_2 x + \epsilon
+  \end{equation*}
+  
+<<fig=TRUE,echo=FALSE>>=
+plot(c(0,0,1,1),c(0,1,1,2),axes=FALSE,pch=19,xlab="Treatment",ylab="Mean of Y",col=c("red3","blue3","red3","blue3"),ylim=c(0,3))
+legend("topright",legend=c("KO","WT"),col=c("red3","blue3"),pch=19)
+axis(1,at=c(0,1),labels=c("no trt","trt"))
+lines(c(0,1),c(0,1),lty=2)
+lines(c(0,1),c(1,2),lty=2)
+@   
+\end{frame}
+
+
+\begin{frame}{Example 3: Interaction}
+   \begin{equation*}
+    Y=\beta_0 + \beta_1 z + \beta_2 x + \beta_3 xz +  \epsilon
+  \end{equation*}
+<<fig=TRUE,echo=FALSE>>=
+plot(c(0,0,1,1),c(0,1,1,3),axes=FALSE,pch=19,xlab="Treatment",ylab="Mean of Y",col=c("red3","blue3","red3","blue3"),ylim=c(0,4))
+legend("topright",legend=c("KO","WT"),col=c("red3","blue3"),pch=19)
+axis(1,at=c(0,1),labels=c("no trt","trt"))
+lines(c(0,1),c(0,1),lty=2)
+lines(c(0,1),c(1,3),lty=2)
+@   
+\end{frame}
+
+
+\begin{frame}{Interaction Examples}
+  \begin{itemize}
+  \item Example 1: What are the signs for $\beta_0$ and $\beta_1$?
+  \item Example 2: What are the signs for $\beta_0, \beta_1$ and $\beta_2$?
+  \item Example 2: What are the signs for $\beta_0, \beta_1, \beta_2$ and $\beta_3$?
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Incorporating Interactions into the NB Model}
+  \begin{itemize}
+     \item Conditional on $x_j$ and $z_j$, the observed number of reads mapped to gene $i$ for sample $j$, $K_{ij}$, follows a 
+     negative binomial distribution with
+    \begin{itemize}
+    \item Mean $\mu_{ij}$ 
+    \item Dispersion parameter $\alpha_i$ (gene specific)
+    \end{itemize}
+  \item Conditional on the treatment status of sample $j$ ($x_j=0$ or 1) and the temperature $z_j$, 
+    the expected value of $K_{ij}$ is
+    \begin{equation*}
+      \mu_{ij} = s_{j} \times q_{ij}
+    \end{equation*}
+  where
+    \begin{equation*}
+     \log q_{ij} =\beta_{i0} + \beta_{i1} x_j + \beta_{i2} z_j + \beta_{i3} x_j z_j
+    \end{equation*}
+    \item The normalization parameters are assumed to be sample (not gene) specific ($s_{ij}=s_j$)
+  \end{itemize}
+\end{frame}
+
+  
+\begin{frame}{Example 1: No Time Course Effect}
+  There is no time-course effect
+<<fig=TRUE,echo=FALSE>>=
+tt=seq(-2*pi,2*pi,length=1000)
+plot(tt,sin(tt),col="blue3",ylim=c(-1,1),type="n",ylab="Y",lwd=2,xlab="time",axes=FALSE)
+abline(h=0,,lwd=2,col="blue3")
+box()
+legend("topright",legend=c("no trt"),col=c("blue3"),lty=1,lwd=2)
+@   
+\end{frame}
+
+
+\begin{frame}{Example 2: Time Course Effect}
+  There is a time course effect
+<<fig=TRUE,echo=FALSE>>=
+tt=seq(-2*pi,2*pi,length=1000)
+plot(tt,sin(tt),col="blue3",ylim=c(-1,1),type="l",ylab="Y",lwd=2,xlab="time",axes=FALSE)
+box()
+legend("topright",legend=c("no trt"),col=c("blue3"),lty=1,lwd=2)
+@   
+\end{frame}
+
+\begin{frame}{Example 3: Time Course Effect}
+  There is a time-course effect within each condition but not time-course effect
+  across conditions. Is this interesting? 
+<<fig=TRUE,echo=FALSE>>=
+tt=seq(-2*pi,2*pi,length=1000)
+plot(tt,sin(tt),col="blue3",ylim=c(-1,1),type="l",ylab="Y",lwd=2,xlab="time",axes=FALSE)
+box()
+lines(tt,sin(tt),col="red3",lwd=2,lty=2)
+legend("topright",legend=c("trt","no trt"),col=c("red3","blue3"),lty=c(2,1),lwd=2)
+@   
+\end{frame}
+
+\begin{frame}{Example 4: Time Course Effect}
+   There is a time-course effect within each condition and a vertical shift with respect to treatment.
+   Is this interesting? 
+<<fig=TRUE,echo=FALSE>>=
+tt=seq(-2*pi,2*pi,length=1000)
+plot(tt,sin(tt),col="blue3",ylim=c(-1,2),type="l",ylab="Y",lwd=2,xlab="time",axes=FALSE)
+box()
+lines(tt,sin(tt)+1,col="red3",lwd=2)
+legend("topright",legend=c("no trt","trt"),col=c("red3","blue3"),lty=1,lwd=2)
+@   
+\end{frame}
+\begin{frame}{Example 5: Time Course Effect}
+   There is a time-course effect within each condition and a phase shift with respect to treatment.
+   Is this interesting? 
+<<fig=TRUE,echo=FALSE>>=
+tt=seq(-2*pi,2*pi,length=1000)
+plot(tt,sin(tt),col="blue3",ylim=c(-1,1),type="l",ylab="Y",lwd=2,xlab="time",axes=FALSE)
+box()
+lines(tt,sin(tt+0.5),col="red3",lwd=2)
+legend("topright",legend=c("no trt","trt"),col=c("red3","blue3"),lty=1,lwd=2)
+@   
+\end{frame}
+
+
+
+\begin{frame}{Example 6: Treatment Time Course Effect}
+<<fig=TRUE,echo=FALSE>>=
+tt=seq(-2*pi,2*pi,length=1000)
+plot(tt,sin(tt),col="blue3",ylim=c(-1,2),type="l",ylab="Y",lwd=2,xlab="time",axes=FALSE)
+box()
+lines(tt,rep(0,length(tt)),col="red3",lwd=2)
+legend("topright",legend=c("no trt","trt"),col=c("red3","blue3"),lty=1,lwd=2)
+@   
+\end{frame}
+
+\begin{frame}{Example 6: Treatment Time Course Effect}
+<<fig=TRUE,echo=FALSE>>=
+tt=seq(-2*pi,2*pi,length=1000)
+plot(tt,sin(tt),col="blue3",ylim=c(-1,2),type="l",ylab="Y",lwd=2,xlab="time",axes=FALSE)
+box()
+lines(tt,sin(tt+0.5),col="red3",lwd=2)
+legend("topright",legend=c("no trt","trt"),col=c("red3","blue3"),lty=1,lwd=2)
+@   
+\end{frame}

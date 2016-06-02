@@ -1,0 +1,1145 @@
+
+\begin{frame}
+  \frametitle{Statistical Hypothesis Testing (Recap of Yesterday)}
+  \begin{itemize}
+  \item Formulate a scientific hypothesis
+  \item Formulate the corresponding statistical hypothesis
+  \item This will consist of a {\it null} hypothesis ($H_0$) and an {\it alternative}
+        hypothesis ($H_1$)
+  \item Specify an experimental design
+  \item Specify the testing procedure to be used:
+    \begin{itemize}
+    \item an appropriate test statistic
+    \item decision rule based on the test statistic (typically under a set of assumptions)
+    \end{itemize}
+  \item Execute Experiment (collect data)
+  \item Based on the amount of evidence using the decision rule
+    \begin{itemize}
+    \item either conclude there is evidence to reject the null hypothesis  $H_0$ in favor
+          of  $H_1$
+    \item or fail to reject $H_0$  (inconclusive)
+    \end{itemize}
+  \end{itemize}
+IMPORTANT: Failing to reject $H_0$ does {\it not} afford us to conclude that
+$H_1$ is {\it true}
+\end{frame}
+
+%% \begin{frame}{Scientific versus Statistical Hypothesis}
+%%   \begin{itemize}
+%%   \item Scientific Hypothesis
+%%     \begin{itemize}
+%%     \item Gene {\it XYZ} is
+%%     \item Which feature (e.g., mutations, 
+%%     \end{itemize}
+%%   \item Statistical hypothesis
+%%     \begin{itemize}
+%%     \item 
+%%     \end{itemize}
+%%   \end{itemize}
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Sampling Distribution of Test Statistic}
+%%   \begin{itemize}
+%%   \item The test statistic $T$ is a random variable inducing
+%%         a (probability) distribution
+%%   \item The distribution of a test statistic is typically called
+%%         the {\it sampling} distribution
+%%   \item The sampling distribution will depend on whether $H$
+%%         is true or not 
+%%   \item The sampling distribution under $H$ (the null) is 
+%%         often called the null sampling distribution.
+%%   \end{itemize}
+%% \end{frame}
+
+\begin{frame}{Null versus Alternative}
+  \begin{itemize}
+  \item The null hypothesis posits the status quo
+  \item It is the conservative hypothesis 
+  \item In the US legal system, the defendant is assumed to be innocent
+  \item The null hypothesis: Defendant is innocent
+  \item Study: Investigate if gene {\it XYZ} is differentially expressed with respect to treatment
+  \item In other words, does the distributions of the feature of the gene
+      you are interested in change when the experimental unit is exposed to 
+      treatment?
+    \begin{itemize}
+    \item $H_0$ gene {\it XYZ} is {\it not} differentially expressed with respect to treatment
+    \item $H_1$ gene {\it XYZ} is differentially expressed with respect to treatment
+    \end{itemize}
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}{More on Null versus Alternative}
+  \begin{itemize}
+  \item Suppose that your are studying the effect of a drug in a clinical study
+  \item Safety Study:
+    \begin{itemize}
+    \item $H_0$: Drug is toxic
+    \item $H_1$: Drug is safe
+    \end{itemize}
+  \item Efficacy study:
+    \begin{itemize}
+    \item $H_0$: Drug is not efficacious
+    \item $H_1$: Drug is efficacious
+    \end{itemize}
+  \end{itemize}
+  
+\end{frame}
+%% \begin{frame}{More on Null versus Alternative}
+%%   \begin{itemize}
+%%   \item Study if gene {\it XYZ} is expressed in a certain tissue 
+%%     \begin{itemize}
+%%     \item $H_0$ gene {\it XYZ} is {\it not} expressed in the tissue
+%%     \item $H_1$ gene {\it XYZ} is expressed in the tissue
+%%     \end{itemize}
+%%   \item Study the effect of treatment on mRNA level of gene {\it XYZ} 
+%%       \begin{itemize}
+%%     \item $H_0$ gene {\it XYZ} is {\it not} differentially expressed with respect to treatment
+%%     \item $H_1$ gene {\it XYZ} is differentially expressed with respect to treatment
+%%     \end{itemize}
+    
+%%   \end{itemize}
+  
+%% \end{frame}
+
+\begin{frame}{Notation: True versus False Null Hypothesis}
+  \begin{itemize}
+  \item The truth may be stated either by the null or alternative hypothesis
+  \item If the truth is stated by the statement of the null hypothesis, we will say that 
+    \begin{itemize}
+    \item The null hypothesis is true
+    \item or call it a true null hypothesis
+    \end{itemize}
+  \item  If the truth is stated by the statement of the alternative hypothesis, we will say that 
+    \begin{itemize}
+    \item The null hypothesis is false
+    \item or call it a false null hypothesis
+    \end{itemize}
+  \item We will use these terms for notational convenience
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Type I and II errors}
+  \begin{itemize}
+  \item Type I Error: Erroneously decide in favor of the alternative
+        hypothesis (reject a true null hypothesis)
+  \item Type II Error: Erroneously decide in favor of the null
+        hypothesis (fail to reject a false null hypothesis)
+  \item The so called "alpha" level is the probability of a type I error
+  \item The "power" of a test, is the complement of the probability of the type II error
+  \item IMPORTANT: There is a trade-off between these two error rates
+  
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Type I and II error trade-off}
+  \begin{itemize}
+  \item In our court system, a defendant is assumed innocent until proven guilty 
+    \begin{itemize}
+    \item Type I error: Convict an innocent defendant
+    \item Type II error: Free a guilty defendant
+    \end{itemize}
+  \item If the prosecution gets too much leeway, the the likelihood of convicting an
+        innocent defendant increases
+  \item Conversely, if the prosecution is reigned in by the judge, the likelihood of letting a guilty defendant walk
+        free increases
+  \item Similar analogy in the case of a smoke detector
+    \begin{itemize}
+    \item Dialing up the sensitivity, increases the likelihood of annoying beeps when using your toaster
+    \item Dialing down the sensitivity, increases the likelihood of missing a true fire
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Notation: Decision}
+  \begin{itemize}
+  \item false-positive (FP): Reject a true null hypothesis (Type I error)
+  \item true-positive (TP): Reject a false null hypothesis
+  \item false-negative (FN): Fail to reject a false null hypothesis (Type II error)
+  \item true-negative (TN): Fail to reject a false null hypothesis
+   \item We will use these terms for notational convenience
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Three Decision Rules}
+  \begin{itemize}
+  \item Following the collection of data, consider using one of the
+        three decision rules
+  \item Decision Rule 1: Reject $H_0$
+  \item Decision Rule 2: Do not reject $H_0$
+  \item Decision Rule 3: Flip a coin: Reject $H_0$ if tails and do not reject $H_0$ if heads
+  \item What are the type I and II error rates for these decision rules?
+  \item Which one would you choose?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Decision Rule 1}
+  \begin{itemize}
+  \item Decision: Reject $H_0$
+  \item If $H_0$ is true, then it will be rejected
+  \item A false-positive decision will be made if $H_0$ is true
+  \item  $\alpha=1$
+   \item If $H_0$ is false, then it will be rejected
+  \item A true-positive decision will be made if $H_0$ is false
+  \item  $\beta=0$
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Decision Rule 2}
+  \begin{itemize}
+  \item Decision: Do not reject $H_0$
+  \item If $H_0$ is true, then it will not be rejected
+  \item A false-positive decision will not be made
+  \item  $\alpha=0$
+   \item If $H_0$ is false, then it will not be rejected
+  \item A false-negative decision is will be made
+  \item  $\beta=1$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Decision Rule 3}
+  \begin{itemize}
+  \item Decision: Flip a coin: Reject $H_0$ if tails and do not reject $H_0$ if heads
+  \item If $H_0$ is true, then the probability of rejecting it is one-half
+  \item  $\alpha=\frac{1}{2}$
+   \item If $H_0$ is false, then probability of not rejecting it is one-half
+  \item  $\beta=\frac{1}{2}$
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{A Bad Rule is a Valid (but bad) Decision Rule}
+  \begin{itemize}
+  \item Decision Rule 1: Reject $H_0$
+    \begin{itemize}
+    \item $\alpha=1$ and $\beta=0$ 
+    \end{itemize}
+  \item Decision Rule 2: Do not reject $H_0$
+    \begin{itemize}
+    \item  $\alpha=0$ and $\beta=1$ 
+    \end{itemize}
+  \item Decision Rule 3: Flip a coin: Reject $H_0$ if tails and do not reject $H_0$ if heads
+    \begin{itemize}
+    \item $\alpha=\frac{1}{2}$ and $\beta=\frac{1}{2}$ 
+    \end{itemize}
+  \item Note that these decision rules effectively ignore the data
+  \item While they are poor decision rules, they are technically valid decision rules
+  \item A poor statistical approach will effectively reduce to one of the three
+  \item Note that while $\alpha+\beta=1$ in all these cases, that is generally not the case
+  \item The type I error is generally {\it not} the complement of the type II error
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{A Simple Example: Formulation}
+<<echo=FALSE>>=
+nflip=12
+@ 
+  \begin{itemize}
+  \item You suspect that a coin (H on side and T on the other) 
+         is not fair (biased)
+  \item Let $\pi$ denote the probability that the coin lands a head on any given toss
+  \item A coin is "fair" if $\pi=\frac{1}{2}$
+  \item or is "biased" otherwise (i.e., $\pi\ne\frac{1}{2}$)
+  \item It is more likely to land a tail if $\pi<\frac{1}{2}$
+  \item or more likely to land a head if $\pi>\frac{1}{2}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{A Simple Example: Statistics and Plain English}
+  \begin{itemize}
+  \item The statistical hypotheses could be succinctly stated as:
+    \begin{itemize}
+    \item Test $H_0: \pi=\frac{1}{2}$ against $H_1:\pi\ne\frac{1}{2}$
+    \end{itemize}
+  \item In English: 
+    
+     \begin{itemize}
+    \item
+    We give benefit of the doubt to the fact that the coin is fair
+        and then will, under this assumption, ascertain if there is enough
+        evidence, on the basis of the data, to conclude that the coin is biased
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{A Simple Example: Decision Rule}
+  \begin{itemize}
+  \item Following the formulation of the hypotheses, we have to decide on an
+        experimental design and a decision rule
+  \item These, along with the specification of the hypotheses,
+        should be done before collecting data. Why?
+  \item Our experimental design: flip the coin $n=\Sexpr{nflip}$ times
+  \item Why $n=\Sexpr{nflip}$ and not say $n=\Sexpr{nflip+1}$ (more on this later)
+  \item A reasonable decision rule for this type of design
+        is to use the so called Binomial
+        Test 
+  \item We will skip the technical details on the test
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{A Simple Example: Collect Data}
+  \begin{itemize}
+  \item We conduct the experiment and observe
+<<echo=FALSE>>=
+set.seed(12333)
+x=sample(c("H","T"),nflip,replace=TRUE,prob=c(0.1,0.9))
+x
+@ 
+\item There are (per design) \Sexpr{length(x)} flips of the coin
+\item We observe \Sexpr{sum(x=='H')} heads and \Sexpr{sum(x=='T')} tails
+\item What would you conclude?
+\item Would you reject if the number of heads were \Sexpr{sum(x=='H')+1}?
+\item how about \Sexpr{sum(x=='H')+2}?
+\item or \Sexpr{sum(x=='H')+3}?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{A Simple Example: Binomial Test in Action}
+  \begin{itemize}    
+  \item We conduct the  binomial test
+<<>>=
+test=binom.test(x=sum(x=='T'),n=length(x),p=1/2)
+test
+@ 
+\item What should we conclude?
+\item At the $\alpha=0.05$ level, there is sufficient evidence to reject
+      the hypothesis that the coin is fair 
+      ({\it P}-value$=$\Sexpr{signif(test[['p.value']],2)})
+\item Note that there is {\it not} sufficient evidence to reject the null
+      if you wish to control the type I error rate at $\alpha=0.01$ 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The Two-Sample Problem: Formulation}
+  \begin{itemize}
+  \item Question: Does treatment alter the distribution of the RNA abundance of a given gene?
+  \item $\mu_0$ denotes the average abundance level of the untreated group
+  \item In other words: If we take a large random sample of untreated experimental units from the untreated group,
+        the "average" RNA abundance for the sample will be about $\mu_0$
+    \item $\mu_1$ denotes the average RNA abundance of the treated group
+
+  \end{itemize}
+  
+\end{frame}
+
+
+\begin{frame}{The Two-Sample Problem: Treatment Effect}
+  \begin{itemize}
+  \item  There is a treatment effect if the means, $\mu_0$ and $\mu_1$, differ:
+    \begin{itemize}
+    \item Null Hypothesis: There is no treatment effect ($\mu_0=\mu_1$)
+    \item Alternative Hypothesis: There is a treatment effect ($\mu_0\ne\mu_1$)
+    \end{itemize}
+  \item Why is the null hypothesis not $\mu_0\ne\mu_1$?
+  \item and the alternative  hypothesis not ($\mu_0=\mu_1$)?
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{The Two-sample Problem: Assumptions}
+  \begin{itemize}
+  \item The decision rule is typically chosen on the basis of some putative assumptions
+  \item Distributional assumptions:
+    \begin{itemize}
+    \item RNA abundance for the untreated group follows a normal distribution with mean $\mu_0$ and
+        variance $\sigma^2$
+     \item RNA abundance for the treated group follows a normal distribution with mean $\mu_1$ and
+        variance $\sigma^2$
+    \end{itemize}
+  \item Assumptions:
+    \begin{itemize}
+    \item the distributions are normal (questionable assumption for digital counts)
+    \item the variability of the RNA abundance is not affected by treatment (same $\sigma^2$)
+    \item Another implicit key assumption: The experimental units are independent
+    \end{itemize}
+  \item The (two-sample) t-test is a commonly method for testing this hypothesis under the given set of assumptions
+  
+  \end{itemize}
+  
+\end{frame}
+
+
+\begin{frame}{Quick Note: Conservative versus Anti-conservative; Robustness}
+  \begin{itemize}
+  \item The properties of the decision rule will depend on these 
+         underlying assumptions
+  \item They  may be greatly sensitive to these assumptions
+  \item The type I error of a decision procedure we hope to achieve is
+        called the nominal level
+  \item Example: If we claim that the nominal level of our decision is 0.05, then we are asserting that the probability of committing a false-positive is at most 0.05.
+  \item If the {\it actual} type I error rate exceeds
+        the nominal level the test is said to be anti-conservative
+  \item If the {\it actual} type I error rate is less than
+        the nominal level the test is said to be  conservative
+   \item A decision rule that is not sensitive to the underlying 
+     assumptions, with respect to type I error control, is said to be robust
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}{Designing the Experiment}
+  \begin{itemize}
+  \item The sample size to achieve the desired power at a given type I error
+        rate depends on the effect size
+  \item Given everything else fixed, a larger effect size requires a smaller
+        size to achieve a power at a given type I error rate
+  \item The effect size for the two-sample t-test is defined as
+    \begin{equation*}
+      \Delta=\frac{| \mu_0-\mu1 |}{\sigma}
+    \end{equation*}
+  \item The numerator $| \mu_0-\mu1 |$ is the difference (in absolute
+       value) of the means
+  \item The size of this difference (how large it is) is in relation to (scaled by ) 
+    the standard deviation
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Sample Size Formula}
+  \begin{itemize}
+  \item The sample size formula the two-sample t-test is
+    \begin{equation*}
+      n=2\frac{(Z_{1-\alpha}+Z_{1-\beta})^2}{\Delta^2}
+    \end{equation*}
+  \item Here $Z_{1-\alpha}$ denote the right $\alpha$ tail of 
+        a normal distribution
+  \item Let's forget most of the technical details
+  \item Just observe that the sample size decreases as the effect
+        size become larger. Why?
+  \item Many other sample size formulas look very similar
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Our Example: The Unknown Truth}
+  \begin{itemize}
+  \item The true values of the unknown parameters:
+    \begin{itemize}
+    \item $\mu_0=0$ 
+    \item $\mu_1=2$
+    \item $\sigma=5$
+    \end{itemize}
+  \item The effect size is
+    \begin{equation*}
+      \Delta=\frac{|0-2|}{5}=0.4
+    \end{equation*}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Forgot about the Design}
+<<echo=FALSE>>=
+n=3
+@ 
+  \begin{itemize}
+  \item What is the power if we use \Sexpr{n} units per group
+<<echo=FALSE>>=
+power.t.test(n=n,delta=abs(2-0),sd=5,sig.level=0.05)
+
+@ 
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}[fragile]{Forgot about the Design}
+<<echo=FALSE>>=
+n=6
+@ 
+  \begin{itemize}
+  \item What is the power if we use \Sexpr{n} units per group
+<<echo=FALSE>>=
+power.t.test(n=n,delta=abs(2-0),sd=5,sig.level=0.05)
+
+@ 
+  \end{itemize}
+  
+\end{frame}
+
+
+\begin{frame}[fragile]{Forgot about the Design}
+<<echo=FALSE>>=
+n=12
+@ 
+  \begin{itemize}
+  \item What is the power if we use \Sexpr{n} units per group
+<<echo=FALSE>>=
+power.t.test(n=n,delta=abs(2-0),sd=5,sig.level=0.05)
+
+@ 
+  \end{itemize}
+  
+\end{frame}
+
+
+\begin{frame}[fragile]{Now Use Experimental Design}
+  \begin{itemize}
+  \item The required sample size, per group, to detect an effect size of
+      \begin{equation*}
+      \Delta=\frac{|0-2|}{5}=0.4
+    \end{equation*}
+    with a power of 0.8, at the 0.05 level is
+<<echo=FALSE>>=
+power.t.test(power=0.8,delta=abs(2-0),sd=5,sig.level=0.05)
+
+@ 
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}{How to check the type I Error and Power}
+  \begin{itemize}
+  \item Simulation provide a powerful framework for understanding
+        the properties of the decision rule
+  \item In the case of the two-sample t-test this works as follows
+    \begin{enumerate}
+    \item Draw a random sample of size $n$ 
+          from a normal distribution with mean $\mu_0$ and
+          standard deviation $\sigma$
+    \item Draw a random sample of size $n$ 
+          from a normal distribution with mean $\mu_1$ and
+          standard deviation $\sigma$
+    \item Apply the two-sample test to the two data samples and
+          record the {\it P}-value
+    \end{enumerate}
+  \item Now repeat the last three steps a large number of times
+  \item The distribution of these simulated {\it P}-values
+        should be similar to the true distribution of the  {\it P}-value
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Simulation Example}
+   \begin{itemize}
+     \item Set parameters
+<<>>=
+set.seed(4141)
+n=6;mu0=0;mu1=2;sigma=5
+@ 
+\item Simulate data
+<<>>=
+x0=rnorm(n,mu0,sigma)
+x1=rnorm(n,mu1,sigma)
+x0
+x1
+@ 
+\item Carry out t-test
+<<>>=
+t.test(x0,x1)
+@   
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Simulation: Important Notes}
+  \begin{itemize}
+  \item Data are generated under the truth
+  \item Parameters and distributions are set by you
+  \item A simulated experiment is to mimic a hypothetical, but real, experiment
+  \item The truth is not known in the context of a real experiment
+  \item IMPORTANT: The decision rule step has to remain {\it blinded} to this truth
+  \item Computing Exercise: Evaluate the type I error and power for the two-sample example
+        using simulation and formula
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Stat 101 Example: One-sided or Two-sided Test?}
+  \begin{itemize}
+  \item Suppose that company XYZ Dairies sells milk in glass bottles
+  \item The company claims that the net content of each bottle is 
+        1 gallon
+  \item Mr. Smith, owner of the ABC Supermarket, suspects
+        he, and ultimately his customers, are being swindled by XYZ 
+  \item Let $\mu$ denote the mean net content (in gallons)
+        of the {\it population} of
+        XYZ Dairies milk bottles
+  \item The company claims $\mu=1$
+  \item Mr. Smith hypothesizes that $\mu <1$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stat 101 Example (null vs alternative)}
+  \begin{itemize}
+\item Mr. Smith has to give benefit of the doubt to company XYZ's claim (i.e.,
+      $\mu=1$)
+\item The purpose of the experiment is to ascertain if there is
+      sufficient evidence to the contrary (i.e., show
+      $\mu\ne 1)$
+\item The null hypothesis is formulated as $H_0: \mu=0$
+\item The alternative is formulated as $H_1: \mu\ne 0$
+\item Mr. Smith has no interest in gathering evidence for showing
+      that XYZ overfills its bottles (i.e., $\mu>1$
+\item In this case, a one-sided hypothesis would be appropriate
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{Stat 101 Example (continued)}
+  \begin{itemize}
+  \item Hypothesis: Test $H: \mu =1$ versus $\bar{H}: \mu < 1$
+  \item He collects a random sample of twenty milk bottles.
+  \item Let $X_1,\ldots,X_{20}$ denote the observed net contents
+        for these 20 bottles
+  \item He decides to assume that these are normally distributed
+        with mean $\mu$ and variance $\sigma^2$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Stat 101 Example (continued)}
+  \begin{itemize}
+  \item The one-sample $t$-test is a commonly used test for this
+        setting (normality assumption):
+        \begin{equation}
+          T=\sqrt{n}\frac{\bar{X}_n-\mu}{s_n},
+        \end{equation}
+        where $\bar{X}_n$ and $s_n$ are the sample mean and standard
+        deviations
+  \item Under $H$ where $\mu=1$ the {\it sampling} distribution of $T$
+        follows a $t$ distribution with $n-1=19$ degrees of freedom
+  \end{itemize}
+\end{frame}
+
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Stat 101 Example (almost done)}
+%% We simulate 20 bottles assuming a normal distribution with 
+%% mean 0.95 and standard deviation 0.05
+%% \begin{small}
+%% <<>>=
+%% set.seed(12345)
+%% x=rnorm(20,0.95,0.1)
+%% stat=sqrt(20)*(mean(x)-1)/sd(x)
+%% stat
+%% pt(stat,df=20-1)
+%% @ 
+%% \end{small}
+%% \end{frame}
+
+%% \begin{frame}[containsverbatim]
+%%  \frametitle{Stat 101}
+%% <<echo=FALSE,fig=TRUE>>=
+%% tt=seq(-5,5,length=100)
+%% plot(tt,dt(tt,df=19),xlab="",ylab="",main="Density for a t(19) Distribution",type="l")
+%% abline(v=stat,lty=2)
+%% abline(v=-stat,lty=2)
+%% @ 
+%% \end{frame}
+
+
+
+%% \begin{frame}
+%%   \frametitle{Hypothesis of Association for Microarrays}
+%%   \begin{itemize}
+%%   \item Consider the hypothesis in the context of a single gene (say $j$)
+%%   \item Is gene $j$ associated with clinical outcome (or phenotype)?
+%%   \item More specifically, is the expression of probe set $j$ associated
+%%         with the outcome?
+%%   \item Independence: $H_j: X^j \perp Y$ (null hypothesis)
+%%   \item Dependence:    $\bar{H}_j: X^j \not\perp Y$ (alternative hypothesis)
+%%   \item Given that this set of hypotheses are specific to gene $j$, they
+%%         are referred to as {\it marginal} hypotheses (for gene $j$)
+%%   \end{itemize}
+%% \end{frame}
+
+
+%% \begin{frame}
+%%   \frametitle{Classes of Test Statistic/Procedures}
+%%   \begin{itemize}
+%%   \item The distribution of the expression of each gene
+%%         is typically assumed to be continuous
+%%    \item So the testing procedure should be applicable to
+%%          the setting where one of the variables in continuous
+%%   \item For example, the $\chi^2$ test for contingency tables
+%%         may not be appropriate
+%%   \item Classes of Test Statistic
+%%     \begin{itemize}
+%%     \item Parametric: Assume that you {\it completely}
+%%           know the shape of the distribution 
+%%           of the sampling distribution (the milk example)
+%%     \item Non-parametric: Do not assume that know the shape
+%%           of the sampling distribution
+%%     \item Semi-parametric: Assume you know something about the shape
+%%     \end{itemize}
+%%   \end{itemize}
+%% \end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Decision Procedure}
+%   \begin{itemize}
+%   \item Determine what the sampling distribution of the test statistic
+%         is under the null hypothesis
+%   \item Determine the amount of evidence by comparing the magnitude
+%         of the observed test statistic to the null sampling distribution
+%   \item You could consider computing a so called {\it P}-value for this
+%   \end{itemize}
+% \end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Stochastic Order}
+%   \begin{itemize}
+%   \item Suppose that you have two experimental groups
+%   \item Let $X$ denote a typical measurement from group 1
+%   \item Let $Y$ denote a typical measurement from group 2
+% \item If the distribution of the measurements does not depend on the group then $P(X<Y)=P(X>Y)=0.5$
+%    \item If $P(X<Y)<0.5$, the $Y$ is said to be stochastically larger than $X$
+%    \item If $P(X<Y)>0.5$, trhe $X$ is said to be stochastically larger than $Y$
+%   \end{itemize}
+% \end{frame}
+
+%% <<echo=FALSE>>=
+%% detach("file:Data/BEERRMA.RData")
+%% @ 
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Data Preparation}
+%% \small
+%% \begin{itemize}
+%% \item Load the Golub data set from the {\tt golubEsets} package
+%% <<>>=
+%% library(golubEsets)
+%% library(Biobase)
+%% data(Golub_Merge)
+%% @ 
+%% \item Load the Beer data set (the RMA algorithm has been applied to this version).
+%%       The {\tt survival} package is loaded as well.
+%% <<>>=
+%% library(survival)
+%% attach("Data/BEERRMA.RData")
+%% @ 
+%% \item Also load the {\tt lattice} and {\tt ggplot2} packages for graphics
+%% <<>>=
+%% library(ggplot2)
+%% library(lattice)
+%% @ 
+%% \end{itemize}
+%% \end{frame}
+
+
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Categorical Outcome (two levels)}
+%%   \begin{itemize}
+%%   \item This case can be formulated within the context of a two sample problem
+%%   \item Two standard test statistics for this case are the {\it t}-test and the
+%%         Wilcoxon rank-sum test
+%%   \end{itemize}
+%% \end{frame}
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Categorical Outcome (two levels)}
+%% \footnotesize
+%% <<ttest>>=
+%% grp<-pData(Golub_Merge)[["ALL.AML"]]
+%% x<-exprs(Golub_Merge)["X59417_at",]
+%% t.test(x~grp)
+%% wilcox.test(x~grp)
+%% @ 
+%% \end{frame}
+
+%% \begin{frame}[containsverbatim]
+%% \frametitle{Categorical Outcome (more than two levels)}
+%% \small
+%% \setkeys{Gin}{width=0.6\textwidth}
+%% \begin{figure}
+%% \centering
+%% <<ttestfig,fig=TRUE>>=
+%% print(xyplot(x~grp,xlab="Disease Type",ylab="Expression (X59417_at)",pch=19,col="blue3"))
+%% @                                                                                                                       
+%% \end{figure}
+%% \end{frame}
+
+
+%% \begin{frame}
+%%   \frametitle{Categorical Outcome (more than two levels)}
+%%   \begin{itemize}
+%%   \item Two standard test statistics for this case are the
+%%          $F$-test (parametric) and the Kruskal-Wallis test (non-parametric)
+%%   \item The $F$-test is also known as the ANOVA test
+%%   \item In the two-sample case, the $F$-test and Kruskal-Wallis
+%%         tests reduce to the two-sample $t$-test (pooled variance)
+%%         and Wilcoxon test respectively.
+%%   \end{itemize}
+%% \end{frame}
+
+
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Categorical Outcome (more than two levels)}
+%%   \footnotesize
+%% <<ftest>>=
+%% grp=factor(pData(BEERRMA)[["Factor.Value..DiseaseStage."]])
+%% x<-exprs(BEERRMA)["J02874_at",]
+%% anova(lm(x~grp))
+%% kruskal.test(x~grp)
+%% @ 
+%% \end{frame}
+
+%% \begin{frame}[containsverbatim]
+%% \frametitle{Categorical Outcome (more than two levels)}
+%% \footnotesize
+%% \setkeys{Gin}{width=0.55\textwidth} 
+%% \begin{figure}
+%% \centering
+%% <<ftestfig,fig=TRUE>>=
+%% print(xyplot(x~grp,xlab="Disease Stage",ylab="Expression (J02874_at)",pch=19,col="blue3"))
+%% @ 
+%% \end{figure}
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Continuous Outcome}
+%%   \begin{itemize}
+%%   \item Example: Blood Pressure
+%%   \item Possible Test Statistics:
+%%     \begin{itemize}
+%%     \item Pearson correlation test (parametric; similar to simple linear
+%%           regression)
+%%     \item Spearman correlation test (non-parametric rank test counterpart
+%%           to Pearson)
+%%     \item Kendall's test (non-parametric rank test for concordance)
+%%     \end{itemize}
+%%   \end{itemize}
+%% \end{frame}
+
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Continuous (Contrived Example)}
+%% \footnotesize
+%% <<corrtest>>=
+%% y<-pData(BEERRMA)[["Characteristics..Age."]]
+%% ii<-!is.na(y);y=y[ii]
+%% x<-exprs(BEERRMA)["S78234_at",ii]
+%% cor.test(y,x)
+%% xx=x
+%% yy=y
+%% cor.test(y,x,method="spearman")
+%% @
+%% \end{frame}
+
+%% \begin{frame}[containsverbatim]
+%% \frametitle{Continuous Outcome (Contrived Example)}  
+%% \footnotesize
+%% \setkeys{Gin}{width=0.55\textwidth}
+%% \begin{figure}
+%%   \centering
+%% <<corrfig,fig=TRUE>>=
+%% plot(x,y,ylab="Age",xlab="Expression (S78234_at)",pch=19,col="blue3")
+%% lines(lowess(x,y),col="red3")
+%% @ 
+%% \end{figure}
+%% \end{frame}
+
+%% \begin{frame}
+%%   \frametitle{Censored Survival Outcome}
+%%   \begin{itemize}
+%%   \item Example: Time to Death or Time to Disease Progression
+%%   \item Patients who have not experienced the event of interest
+%%         at the time of the analysis are (right) censored.
+%%   \item Possible Test Statistics:
+%%     \begin{itemize}
+%%     \item Cox score statistic (semi-parametric)
+%%     \item Rank Score statistic (non-parametric)
+%%      \end{itemize}
+%%   \end{itemize}
+%% \end{frame}
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Censored Survival Outcome (Example)}
+%% \tiny
+%% <<coxph>>=
+%% ostime=pData(BEERRMA)[["ostime"]]
+%% ii=!is.na(ostime);ostime=ostime[ii]
+%% event=pData(BEERRMA)[["event"]][ii]
+%% x=exprs(BEERRMA)["X03363_s_at",][ii]
+%% summary(coxph(Surv(ostime,event)~x))
+%% @ 
+%% \end{frame}
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Censored Survival Outcome (Example)}
+%% \footnotesize
+%% \setkeys{Gin}{width=0.6\textwidth}
+%% \begin{figure}
+%% <<coxph-fig,fig=TRUE>>=
+%% fit0=coxph(Surv(ostime,event)~1)
+%% plot(x,resid(fit0),xlab="Expression (X03363_s_at)",
+%%      ylab="Residual",pch=19,col="blue3")
+%% @
+%% \end{figure}
+%% \end{frame}
+
+%% \begin{frame}[containsverbatim]
+%%   \frametitle{Censored Survival Outcome (Example)}
+%% \footnotesize
+%% <<coxph-robust,fig=FALSE>>=
+%% summary(coxph(Surv(ostime,event)~x))$sctest
+%% summary(coxph(Surv(ostime,event)~rank(x)))$sctest
+%% summary(coxph(Surv(ostime,event)~x,subset=x<14))$sctest
+
+%% @
+%% \end{frame}
+
+%% <<coxph-robust-rm,echo=FALSE>>=
+%% rm(x,ii,fit0)
+%% @ 
+
+\begin{frame}
+  \frametitle{Statistical versus Clinical/Biological Significance}
+  \begin{itemize}
+  \item Hypothesis testing is carried out to investigate
+        {\it statistical} and not {\it biological} significance
+  \item It is the responsibility of the investigator to 
+        pose a biologically relevant hypothesis.
+  \item It is also the responsibility of the investigator
+        to ensure that a statistically significant finding
+        is biologically plausible/realistic
+  \item Statistical significance does not necessarily imply
+        biological significance or vice versa
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[containsverbatim]
+\frametitle{Biologically but not Statistically Significant}
+\begin{small}
+<<>>=
+set.seed(1122333)
+x0=rnorm(3,1,1)
+x1=rnorm(3,2,1)
+x0
+x1
+t.test(x0,x1)
+@ 
+\end{small}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{Statistically but not Biologically Significant}
+\begin{small}
+<<>>=
+x0=c(3.0001,3.0002,3.0003,3.0004,3.0005)  
+x1=c(3.0006,3.0007,3.0008,3.0009,3.0010)  
+x0
+x1
+t.test(x0,x1)
+@   
+\end{small}
+\end{frame}
+
+
+
+
+\begin{frame}{Distribution of  {\it P}-values under $H_0$}
+  \begin{itemize}
+  \item Under the null hypothesis, the distribution of the
+        {\it P}-values is uniform
+  \item If you repeat the experiment many times under the null hypothesis
+        (e.g., no differential expression), the distribution of the 
+        {\it P}-values will look like this
+<<echo=FALSE,fig=TRUE>>=
+set.seed(123)
+pvals=runif(B4)
+hist(pvals,prob=TRUE,main="Distribution of P-values")
+@ 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Quantile-Quantile Plot}
+  \begin{itemize}
+  \item An important tool to assess type I error control is the
+        Quantile-Quantile Plot (aka QQ-Plot)
+  \item The plot should look like this under $H_0$
+<<echo=FALSE,fig=TRUE>>=
+set.seed(123)
+pvals=runif(B2)
+qqplot(pvals,qunif(ppoints(500)),ylab="Uniform Distribution",xlab="P-values")
+abline(0,1)
+@ 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Quantile-Quantile Plot: Deviation}
+  \begin{itemize}
+  \item A deviation in the QQ-Plot indicates that there may be evidence
+        to reject $H_0$ 
+  \item Or that teh decision rule is not accounting for type I error: INFLATION!!
+<<echo=FALSE,fig=TRUE>>=
+set.seed(123)
+pvals=rbeta(B2,1,2)
+qqplot(pvals,qunif(ppoints(500)),ylab="Uniform Distribution",xlab="P-values",ylim=c(0,1),xlim=c(0,1))
+abline(0,1)
+@ 
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Estimation}
+  \begin{itemize}
+  \item So far we have considered concepts and issues related to hypothesis testing
+  \item What is often of interested is estimate the unknown parameters
+  \item First determine how to quantify the effect size
+  \item Consider the two sample problem
+  \item Examples
+    \begin{itemize}
+    \item Mean level for the untreated group $\mu_0$
+    \item Mean level for the treated group $\mu_1$
+    \item Fold-change $\rho=\frac{\mu_1}{\mu_0}$
+    \item Standardized difference $\Delta=|\mu_1-\mu_0|/\sigma$
+  \end{itemize}
+  \item Next figure out how to estimate the effect size
+  \item Two types of estimates
+    \begin{itemize}
+    \item Point estimate
+    \item Interval estimate
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Confidence Intervals}
+  \begin{itemize}
+  \item Example: The sample mean (the average of the observations) is a point estimate of the 
+        population (true) mean
+  \item It is either equal to the true value of the parameter or is not
+  \item As it is a single number it does not provide any direct measure of accuracy
+  \item An interval estimate incorporates some measure of accuracy
+  \item Thus it is generally more appropriate to present an interval estimate
+  \item A common example of an interval estimate is the confidence interval
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Estimation Example}
+<<echo=FALSE>>=
+mu=0
+sigma=1
+n=6
+@   
+  \begin{itemize}  
+  \item Assumption: The RNA abundance follows a normal distribution with mean $\mu=\Sexpr{mu}$
+        and standard deviation $\sigma=\Sexpr{sigma}$
+  \item Goal: The population mean $\mu$ is to be estimated on the basis of sample of size
+        $n=\Sexpr{n}$
+  \item Objectives:
+    \begin{itemize}
+    \item Produce point estimate of $\mu$ 
+    \item Produce a 95\% confidence interval of $\mu$
+    \end{itemize}
+  \item We will produce these estimates on the basis of the sample mean
+  \item The sample mean is obtained by averaging the $n$ observations
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Simulate Experiment 1}
+  \begin{itemize}  
+  \item Simulate the data
+<<>>=
+n
+mu
+sigma
+set.seed(12331)
+x=rnorm(n,mu,sigma)
+@   
+\item Calculate the sample mean
+<<>>=
+mean(x)
+@   
+\item Calculate confidence interval
+<<>>=
+# sample standard deviation
+s=sd(x)
+# Margin of error
+error=qt(0.975,df=n-1)*s/sqrt(n)
+# A 95% CI
+c(mean(x)-error,mean(x)+error)
+@   
+ \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Repeat the Experiment}
+<<echo=FALSE>>=
+set.seed(12301)
+makeest=function(b,n,mu,sigma,alpha)
+    {
+        x=rnorm(n,mu,sigma)
+        avg=mean(x)
+        s=sd(x)
+        me=qt(1-alpha/2,df=n-1)*s/sqrt(n)
+        lcl=avg-me
+        ucl=avg+me
+        data.frame(exp=b,n,mu,sigma,avg,lcl,ucl,cover=ifelse(mu>=lcl&&mu<=ucl,1,0),len=ucl-lcl)
+        }
+
+res=foreach(b=1:10,.combine=rbind)%do%{makeest(b,n,mu,sigma,0.05)}
+kable(res, format = "latex",digits=c(0,0,0,0,2,2,2,0,2))
+@ 
+\end{frame}
+\begin{frame}{Confidence Interval: Common Misunderstanding}
+  \begin{itemize}
+  \item A (not the) 95\% CI for the mean based on the first experiment was
+        $(\Sexpr{round(res[1,"lcl"],2)},\Sexpr{round(res[1,"ucl"],2)})$
+  \item A (not the) 95\% CI for the mean based on the second experiment was
+        $(\Sexpr{round(res[2,"lcl"],2)},\Sexpr{round(res[2,"ucl"],2)})$
+  \item It is wrong to say that the probability that the first CI does not contain the true value
+        $\mu=0$ is 95\%
+  \item It is also wrong to say that the probability that the second CI contains the true value
+        $\mu=0$ is 95\%
+  \item We conduct one and only was experiment
+  \item Based on the first experiment, we can say that we are 95\% confident that it contains the true value
+  \item That is of course not the case
+  \item If we repeated the experiment a large number of times, 95\% of the CIs would cover the true
+    value
+  \item We are 95\% confident that the first experiment is among these (which it is not)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Repeat the Experiment}
+  <<echo=FALSE>>=
+mu=0
+sigma=1
+n=12
+@  
+  
+  \begin{itemize}
+  \item Now repeat experiment with a sample size of
+    $n=\Sexpr{n}$.
+<<echo=FALSE>>=
+set.seed(12311)
+res=foreach(b=1:10,.combine=rbind)%do%{makeest(b,n,mu,sigma,0.05)}
+kable(res, format = "latex",digits=c(0,0,0,0,2,2,2,0,2))
+@ 
+\item Compare the widths of the CIs
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Quick Note: Estimate versus Estimator}
+  \begin{itemize}
+  \item We use the terms estimate and estimators interchangeably
+  \item There is a subtle but important distinction
+  \item Suppose that you decide to estimate the population mean using the sample mean (once you get the data)
+  \item The sample mean is the estimator
+  \item Its outcome is random before you collect the data
+  \item Once you collect the data and plug them into the estimator you get an (not the) estimate
+  \end{itemize}
+\end{frame}

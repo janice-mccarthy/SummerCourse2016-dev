@@ -1,0 +1,309 @@
+
+\begin{frame}{Intra- and Inter-subject Variability}
+  \begin{itemize}
+    \item In most experiments, including RNA-Seq, the variability may not be exclusively due to measurement
+      error
+  \item Another source could be due to repeated measurements
+  \item or sampling from strains or cell lines
+  \item or due to batch effects
+  \item We will motivate these ideas using a classical toy example
+  \item We will illustrate the caveats of properly
+        accounting for these two sources of variability through
+        two simulation studies
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Rails Data}
+  \begin{itemize}
+  \item Observation adjusted travel time for ultrasonic head-waves in the rail 
+        (nanoseconds).
+  \item Data set: 6 rails; the travel time is sampled three times per
+        rail
+  \item Eighteen measurements
+  \item Six Experimental Units
+  \item Implicit assumption: The six rails are randomly selected
+        from a {\it large} pool of rails
+  \item What is of interest is neither the batch or any of these
+        6 rails (specifically)
+  \item What is of interest is the population (the huge pool)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Rail Data}
+<<railplots,echo=FALSE,fig=TRUE>>=
+ # tick labels direction
+xyplot(travel~Rail,data=Rail,ylab="Zero-force travel time (nano-seconds)")
+@
+
+\end{frame}
+
+\begin{frame}{Rail Data: Model Formulation}
+  \begin{itemize}
+  \item $\mu$ denotes the {\it true} travel time
+  \item $\mu$ is an unknown fixed quantity
+  \item $Y_i$ denotes the {\it observed} travel time 
+        (for observation $i=1,\ldots,18$)
+  \item In absence of noise, true value $\mu$
+        is observed
+  \item In other words, $Y_{i}=\mu$ for $i=1,\ldots,18$
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Important Fact about Normal Distribution}
+  \begin{itemize}
+  \item Consider a normal distribution with mean 0 and standard deviation
+        $\sigma$
+  \item If the data are shifted by a constant $\mu$, then
+    \begin{enumerate}
+    \item  resulting
+        distribution remains normal
+     \item The mean of the new distribution is $\mu+0=\mu$
+  \item Its standard deviation remains unchanged
+    \end{enumerate}
+  \item The last two (but not first) property are true for any distribution
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Shift Normal Distribution}
+<<fig=TRUE,echo=FALSE>>=
+tt=seq(-10,10,length=1000)
+plot(tt,dnorm(tt,0,1),type="l",xlab="",ylab="")
+lines(tt,dnorm(tt,3,1),lty=2)
+abline(v=0,lty=1)
+abline(v=3,lty=2)
+rm(tt)
+@   
+\end{frame}
+
+
+\begin{frame}{Rail Data: Simple Model}
+  \begin{itemize}
+  \item What is observed is a distorted version of $\mu$
+    \begin{equation*}
+      Y_{i}=\mu+\epsilon_i
+    \end{equation*}
+    \item Notes:
+    \begin{itemize}
+    \item  $Y_i$ is observable
+    \item  $\epsilon_i$ is {\it not} observable
+    \item $\mu$ is an unknown parameter
+    \end{itemize}
+ \item The variability observed here is exclusively attributed to the measurement error
+      $\epsilon_i$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Linear Model}
+<<>>=
+summary(lm(travel~1,data=Rail))
+@   
+\end{frame}
+
+\begin{frame}{Rail Data: Account for Two Source of Variability}
+  \begin{itemize}
+  \item What is observed is a distorted version of $\mu$
+  \item It is distorted by a ra
+  \item $Y_{ij}$: Index the rail by $i=1,\ldots,6$ and the replicate by $j=1,2,3$
+  \item $Y_{23}$: The obeservation for the third replicate for rail 2
+   \item Model
+    \begin{equation*}
+      Y_{ij}=\mu+b_i+\epsilon_{ij}
+    \end{equation*}
+    \item Notes:
+    \begin{itemize}
+    \item  $Y_{ij}$ is observable
+    \item $b_i$ is {\it not} observable
+    \item  $\epsilon_{ij}$ is {\it not} observable
+    \item $\mu$ is an unknown parameter
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Linear Mixed Effects Model}
+<<>>=
+lme(travel~1,random=~1|Rail,data=Rail)
+@   
+\end{frame}
+
+
+\begin{frame}[fragile]{Is the Mixed Model Adequate?}
+  \begin{itemize}
+  \item Assumptions:
+    \begin{itemize}
+    \item $b_i$ is normally distributed $N[0,\sigma^2_b]$
+    \item $\sigma^2_b$ does {\it not} depend on $i$ (homoscedastic) 
+    \item $\epsilon_{ij}$ is normally distributed $N[0,\sigma^2_e]$
+    \item $\sigma^2_e$ does {\it not} depend on $i$ or $j$ (homoscedastic)
+    \item Error model is additive (could be multiplicative)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Example 1: Setup}
+  \begin{itemize}
+  \item What are the ramifications for ignoring the clustering?
+  \item We will sample 6 experimental units each with three replicates
+  \item $\mu=0, \sigma_e=0.25,\sigma_b=0.5$
+  \end{itemize}
+  
+<<echo=FALSE,fig=TRUE>>=
+sim.ranef=function(nk,n,se,sb,verbose=FALSE)
+    {
+        # n exp units with nk replicates each
+        N=n*nk
+        e=rnorm(N,0,se)
+        b=rep(rnorm(n,0,sb),each=nk)
+        id=rep(1:n,each=nk)
+        y=0+e+b
+        dat=data.frame(id,b,e,y)
+        mod0=summary(lm(y~1,data=dat))
+        mod1=summary(lme(y~1,random=~1|id,data=dat))
+        pval0=mod0$coef["(Intercept)","Pr(>|t|)"]
+        pval1=mod1$tTable["(Intercept)","p-value"]
+        if(verbose)
+            {
+                out=list(dat,mod0,mod1)
+            }
+        else
+            {
+                out=c(pval0,pval1)
+            }
+        out
+    }
+set.seed(210)
+ex1=sim.ranef(3,6,0.25,0.5,verbose=TRUE)
+print(xyplot(y~id,data=ex1[[1]]))
+@ 
+\end{frame}
+
+
+\begin{frame}[fragile]{Example 1: Simulation}
+<<echo=FALSE>>=
+@   
+  
+   \begin{itemize}
+  \item Simulation outline
+  \begin{enumerate}
+  \item Simulate a data set
+  \item Test $H_0: \mu=0$ ignoring the random effect (save {\it P}-value) 
+  \item Test $H_0: \mu=0$ accounting for the random effect (save {\it P}-value) 
+  \end{enumerate}
+  \item Repeat the three steps \Sexpr{B3-1} additional times
+  \item Given that the {\it true} $\mu=0$ (by design), we would expect
+        \Sexpr{floor(B3*0.05)} of these  {\it P}-values to be less than 0.05
+  \item Why?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Example 1: Results}
+<<>>=
+set.seed(210)
+res=replicate(B3,sim.ranef(3,6,0.25,0.5,verbose=FALSE))
+mean(res[1,]<0.05)
+mean(res[2,]<0.05)
+@ 
+\begin{itemize}
+\item The empirical type I error rate when not accounting for the random
+      effect is \Sexpr{signif(mean(res[1,]<0.05),2)}.
+\item This inflated by a factor of \Sexpr{signif(mean(res[1,]<0.05)/0.05,2)}.
+\item The empirical error rate when accounting for the random effect
+  is slightly inflated
+\item This is due to the small sample size ($n=6$)
+\item More on this later.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Example 1: Results}
+<<fig=TRUE,echo=FALSE,fig.width=14, fig.height=7,out.width='1.1\\linewidth'>>=
+par(mfrow=c(1,2))
+qqplot(res[1,],qunif(ppoints(500)), cex=0.1,xlab="Uniform Distribution",ylab="lm",xlim=c(0,1),ylim=c(0,1))
+abline(0,1)
+qqplot(res[2,],qunif(ppoints(500)), cex=0.1,xlab="Uniform Distribution",ylab="lme",xlim=c(0,1),ylim=c(0,1))
+abline(0,1)
+@ 
+\end{frame}
+
+\begin{frame}[fragile]{Example 1: Results}
+<<fig=TRUE,echo=FALSE>>=
+
+plot(res[1,],res[2,],pch=19,cex=0.5,xlab="lm",ylab="lme",xlim=c(0,1),ylim=c(0,1))
+abline(0,1)
+@ 
+\end{frame}
+
+\begin{frame}[fragile]{Example 1: Results}
+  \begin{itemize}
+  \item Now, we repeat the simulation with a larger sample size
+  \end{itemize}
+<<>>=
+res=replicate(B3,sim.ranef(3,50,0.25,0.5,verbose=FALSE))
+mean(res[1,]<0.05)
+mean(res[2,]<0.05)
+@   
+\begin{itemize}
+\item The empirical type I error when not accounting for the random effect
+      remains inflated by a factor of  \Sexpr{signif(mean(res[1,]<0.05)/0.05,2)}.
+      \item The empirical type I error  when accounting for the random effect is now right about the nominal level of 0.05
+\end{itemize}
+ 
+\end{frame}
+
+\begin{frame}{Example 2: Setup}
+  \begin{itemize}
+  \item Now consider the two-sample problem we have previously considered
+        with a twist
+  \item Question: Does treatment alter the distribution of the RNA level of a given gene?
+  \item Assumptions:
+    \begin{itemize}
+    \item the RNA level for the untreated group follows a normal distribution with mean $\mu_0$ and
+        variance $\sigma^2$
+     \item The RNA level for the treated group follows a normal distribution with mean $\mu_1$ and
+        variance $\sigma^2$
+    \end{itemize}
+ \item Sample $n$ units from each treatments in replicates of 3
+ \item Apply the two-sample t-test which does not account for the clustering
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Example 2: Simulation}
+<<echo=FALSE>>=
+# Clustering Effect on Two sample problem
+sim.twosample.clustered=function(nk,n,se,sb,verbose=FALSE)
+    {
+        N=n*nk
+        e0=rnorm(N,0,se)
+        e1=rnorm(N,0,se)
+        b0=rep(rnorm(n,0,sb),each=nk)
+        b1=rep(rnorm(n,0,sb),each=nk)
+        y0=e0+b0
+        y1=e1+b1
+        t.test(y0,y1)$p.value
+    }
+@ 
+
+<<>>=
+set.seed(2314)
+# Simulate with no clustering effect (sb=0)
+pval0=replicate(B3,sim.twosample.clustered(3,10,0.25,0))
+# Simulate with no clustering effect (sb>0)
+pval1=replicate(B3,sim.twosample.clustered(3,10,0.25,0.5))
+mean(pval0<0.05)
+mean(pval1<0.05)
+@ 
+\begin{itemize}
+\item The empirical type I error when there is no clustering
+      effect is \Sexpr{signif(mean(pval0<0.05),2)}
+\item The empirical type I error when there is a clustering effect is
+      \Sexpr{signif(mean(pval1<0.05),2)}
+\item This off by a factor of \Sexpr{signif(mean(pval1<0.05)/0.05,2)}!
+\end{itemize}
+\end{frame}
+
+
+

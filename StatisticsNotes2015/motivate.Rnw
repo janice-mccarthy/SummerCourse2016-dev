@@ -1,0 +1,394 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  This Beamer template was created by Cameron Bracken.
+%%  Anyone can freely use or modify it for any purpose
+%%  without attribution.
+%%
+%%  Last Modified: January 9, 2009
+%%
+
+\documentclass[xcolor=x11names,compress]{beamer}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{4 on 1}[letterpaper,border shrink=5mm]
+%\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage{caption}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+%\setbeamersize{text margin left=3pt,text margin right=3pt}
+
+\input{Settings/preamble}
+
+
+
+%\AtBeginSection{\frame{\sectionpage}}
+
+\begin{document}
+\tikzstyle{pointing} = [pin edge={to-,thin,black}]
+\tikzset{
+    cross/.style={cross out, draw=black, inner sep=1pt, outer sep=1pt},
+}
+
+\begin{frame}
+\title{BIOS 707}
+\subtitle{Motivation}
+\author{Biostatistics and Bioinformatics}
+\date{
+\input{Logo/kochcurve}\\
+\vspace{0.5cm}
+Summer 2015}
+\titlepage
+\input{Logo/logos}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+<<setup, include=FALSE>>=
+set.seed(122333)
+options(width = 75)
+par(las=1,mar=c(4,4,.1,.1))
+library(knitr)
+library(lattice)
+library(nlme)
+opts_chunk$set(fig.path='figure/beamer-',fig.align='center',fig.show='hold',size='tiny',fig.width=7, fig.height=7,out.width='.6\\linewidth')
+@ 
+
+<<pkgs,include=FALSE>>=
+library(mvtnorm)
+@ 
+
+
+
+
+
+
+<<echo=FALSE>>=
+
+set.seed(123)
+n=20
+x0 <- rmvnorm(n,mean=c(-5,-5)/3,sigma = 0.5*diag(2))
+x1 <- rmvnorm(n,mean=c(5,5)/3,sigma = 0.5*diag(2))
+
+
+mM=function(x,y)
+  {
+    z=c(x,y)
+    c(min(z),max(z))
+  }
+
+@ 
+\begin{frame}
+  \frametitle{Classification Problem}
+<<predmod1,echo=FALSE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Clear-cut case}
+<<predmod2,echo=FALSE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+abline(0,-1)
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Clear-cut case?}
+<<predmod3,echo=FALSE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+abline(0,-1)
+abline(-1,-1,lty=2)
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Clear-cut case??}
+<<predmod3a,echo=FALSE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+abline(0,-1)
+abline(-1,-1,lty=2)
+abline(0,-2,lty=3)
+@ 
+\end{frame}
+
+
+
+
+<<echo=FALSE>>=
+rm(x0,x1)
+set.seed(123)
+x0 <- rmvnorm(n,mean=c(-5,-5)/3,sigma = 10*diag(2))
+x0[17,2]=x0[17,2]-0.7
+x1 <- rmvnorm(n,mean=c(5,5)/3,sigma = 10*diag(2))
+DAT=data.frame(factor(rep(c(0,1),c(n,n))),rbind(x0,-x1))
+colnames(DAT)=c("y","x0","x1")
+x=rbind(x0,x1)
+y=rep(0:1,each=n)
+@ 
+
+
+
+\begin{frame}
+  \frametitle{Less Clear-cut case}
+<<predmod4,echo=FALSE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Less Clear-cut case}
+<<predmod5,echo=FALSE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+abline(0,-1)
+
+@ 
+\end{frame}
+
+\begin{frame}
+  \frametitle{Less Clear-cut case}
+<<predmod6,echo=FALSE>>=
+plot(1,xlim=mM(x0[,1],x1[,1]),ylim=mM(x0[,2],x1[,2]),type="n",xlab="x1",ylab="x2",axes=FALSE)
+box()
+text(x0[,1],x0[,2],label="0",col=2)
+text(x1[,1],x1[,2],label="1",col=4)
+abline(0,-1)
+abline(1,-1,lty=2)
+@ 
+\end{frame}
+
+
+\begin{frame}[plain]
+  \frametitle{Regression Problem}
+\begin{figure}
+\centering
+<<echo=FALSE>>=
+set.seed(10)
+x<-1:10
+y=x+rnorm(10,0.5)
+library(splines)
+
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Linear Regression (lin)}
+\begin{figure}
+\centering
+<<echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+modlm=lm(y~x)
+lines(x,predict(modlm),col=3)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Spline Regression (spl)}
+\begin{figure}
+\centering
+<<echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+modns=lm(y~ns(x,df=4))
+lines(x,predict(modns),col=4)
+#lines(x,predict(modns),col=4)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Connect the dots (ctd)}
+\begin{figure}
+\centering
+<<echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+#lines(x,predict(modlm),col=3)
+#lines(x,predict(modns),col=4)
+lines(x,y,col=2)
+@ 
+\end{figure}
+\end{frame}
+\begin{frame}[plain]
+  \frametitle{Which Approach?}
+\begin{figure}
+\centering
+<<echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,xlim=c(0,10),ylim=c(0,10),pch=19)
+lines(x,predict(modlm),col=3)
+lines(x,predict(modns),col=4)
+lines(x,y,col=2)
+@ 
+\end{figure}
+\end{frame}
+
+
+\begin{frame}[plain]
+  \frametitle{Regression Problem}
+\begin{figure}
+\centering
+<<echo=FALSE>>=
+set.seed(10)
+n=100
+x<-seq(-pi,pi,length=n)
+y=sin(x)+rnorm(n,0,0.5)
+library(splines)
+par(mfrow=c(1,1),bg="white")
+plot(x,y,pch=19)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Linear Regression (lin)}
+\begin{figure}
+\centering
+<<echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,pch=19)
+modlm=lm(y~x)
+lines(x,predict(modlm),col=3)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Spline Regression (spl)}
+\begin{figure}
+\centering
+<<echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,pch=19)
+modns=lm(y~ns(x,df=4))
+lines(x,predict(modns),col=4)
+#lines(x,predict(modns),col=4)
+@ 
+\end{figure}
+\end{frame}
+
+\begin{frame}[plain]
+  \frametitle{Connect the dots (ctd)}
+\begin{figure}
+\centering
+<<echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,pch=19)
+#lines(x,predict(modlm),col=3)
+#lines(x,predict(modns),col=4)
+lines(x,y,col=2)
+@ 
+\end{figure}
+\end{frame}
+\begin{frame}[plain]
+  \frametitle{Which Approach?}
+\begin{figure}
+\centering
+<<echo=FALSE>>=
+par(mfrow=c(1,1),bg="white")
+plot(x,y,pch=19)
+lines(x,predict(modlm),col=3)
+lines(x,predict(modns),col=4)
+lines(x,y,col=2)
+@ 
+\end{figure}
+\end{frame}
+\begin{frame}[fragile]{Density Estimation}
+  $X_1,\ldots,X_{100}$ is an idd sample from a distribution
+  $F$ ($F[x]=P[X \le x]$). Assume that $F$ admits a density function $f$.
+  Estimate $f$ on the basis of the observed data
+<<echo=FALSE>>=
+y=rexp(100)
+summary(y)
+@ 
+\end{frame}
+
+\begin{frame}[fragile]{Density Estimation}
+<<echo=FALSE>>=
+hist(y,breaks=3)
+@ 
+\end{frame}
+\begin{frame}[fragile]{Density Estimation}
+<<echo=FALSE>>=
+hist(y,breaks=5)
+@ 
+\end{frame}
+
+\begin{frame}[fragile]{Density Estimation}
+<<echo=FALSE>>=
+hist(y)
+@ 
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Density Estimation}
+<<echo=FALSE>>=
+plot(density(y,bw=0.1))
+@ 
+\end{frame}
+
+\begin{frame}[fragile]{Density Estimation}
+<<echo=FALSE>>=
+plot(density(y,bw=0.15))
+@ 
+\end{frame}
+\begin{frame}[fragile]{Density Estimation}
+<<echo=FALSE>>=
+plot(density(y))
+@ 
+\end{frame}
+\begin{frame}{Fisher's Iris Data}
+<<iris1, echo=F>>=
+pairs(iris[1:4], main = "Anderson's Iris Data -- 3 species",
+pch = 21, bg = c("red", "green3", "blue")[unclass(iris$Species)])
+@   
+\end{frame}
+
+
+\begin{frame}{Fisher's Iris Data}
+<<iris2, echo=F>>=
+pairs(iris[1:4], main = "Anderson's Iris Data",
+pch = 21)
+@   
+\end{frame}
+
+\begin{frame}{Topics}
+  \begin{itemize}
+  \item Classification
+  \item Class Discovery
+  \item Regression and Density Estimation
+  \item Multiple Testing
+  \item Information Theory (if time allows)
+  \end{itemize}
+\end{frame}
+
+
+
+
+\end{document}
+
+

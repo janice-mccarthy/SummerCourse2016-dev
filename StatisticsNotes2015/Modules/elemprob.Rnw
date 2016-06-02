@@ -1,0 +1,321 @@
+\begin{frame}{Sample Space}
+  \begin{itemize}
+  \item The set of {\it all} possible outcomes in an experiment
+        is called the {\it sample space}
+  \item Example 1: Flip a coin
+    \begin{itemize}
+    \item The outcome is either head ($H$) or tail ($T$)
+    \item The sample space $\Omega=\{H,T\}$
+    \end{itemize}
+  \item Example 2: Flip two coins
+    \begin{itemize}
+    \item The sample space $\Omega=\{HH,TH,HT,TT\}$
+    \end{itemize}
+  \item A set of {\it possible} outcomes in an experiment is called
+        an {\it event}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Event: Examples}
+  \begin{itemize}
+  \item Flip two coins (sample space $\Omega=\{HH,TH,HT,TT\}$)
+    \begin{itemize}
+    \item At least one tail $\{TT,TH,HT\}$
+    \item At most one tail $\{TH,TH\}$
+    \item Exactly two tails $\{TT\}$
+    \item No heads $\{TT\}$
+    \item At least one head {\it and} one tail $\{HT,TH\}$
+    \item At least one head {\it or} one tail $\{TT,TH,HT,HH\}$
+    \item Two heads and two tails: Not possible $\{\}$
+    \end{itemize}
+  \item Notes:
+    \begin{itemize}
+    \item The sample space is an event
+    \item The set of impossible outcomes is also an event (denoted by $\varnothing$)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Subsets}
+  \begin{itemize}
+  \item An event consists of outcomes from a sample space
+  \item Suppose that $A_1$ and $A_2$ are two events
+  \item If every outcome in $A_1$ is also an outcome of $A_2$,
+        then $A_1$ is said to be a subset of $A_2$.
+  \item This is denoted by $A_1 \subset A_2$
+  \item Flip two coins (sample space $\Omega=\{HH,TH,HT,TT\}$)
+    \begin{itemize}
+    \item Consider the following three events
+        \begin{itemize}
+        \item $A_1=\{TT,HT\}$
+        \item $A_2=\{TT,HT,TH\}$
+        \item $A_3=\{HT,HH\}$
+        \end{itemize}      
+    \item Then
+      \begin{itemize}
+      \item $A_1 \subset A_2$
+      \item $A_3 \not\subset A_2$ ($HH$ is an outcome in $A_3$ but not $A_2$)
+      \end{itemize}
+   \end{itemize}
+  \end{itemize}
+  
+\end{frame}
+
+
+\begin{frame}{Unions and Intersections}
+  \begin{itemize}
+  \item Consider two events $A_1$ and $A_2$
+  \item The event that contains the outcomes that $A_1$ and $A_2$
+        have in common is called the {\it intersection}
+  \item It is denoted by $A_1\cap A_2$
+  \item The event that contains the outcomes that belong either to 
+        $A_1$ or to $A_2$
+        have in common is called the {\it union}
+  \item It is denoted by $A_1\cup A_2$
+  \item Example
+    \begin{itemize}
+    \item $A_1=\{TT\}$
+    \item $A_2=\{HH,TT,HT\}$
+    \item $A_3=\{TH\}$
+    \item $A_1 \cap A_2 = \{TT\}$
+    \item $A_1 \cup A_2 = \{TT,HH,HT\}$
+    \item $A_2 \cap A_3 = \varnothing$ (they share no common elements)
+    \item $A_2 \cup A_3=\{TT,HH,TH,HT\}=\Omega$.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Mutual Exclusivity}
+  \begin{itemize}
+  \item Suppose that $A_1$ and $A_2$ are two events
+  \item If $A_1$ and $A_2$ have no events in common, then
+        $A_1$ and $A_2$ are said to be mutually exclusive
+  \item Another way to denote this: $A_1\cap A_2=\varnothing$
+   \item Example 
+        \begin{itemize}
+        \item $A_1=\{TT,HT\}$
+        \item $A_2=\{HH,TH\}$
+        \item $A_3=\{HH,TT\}$
+        \end{itemize}
+   \item Mutual Exclusivity
+        \begin{itemize}
+        \item $A_1$ and $A_2$ are mutually exclusive
+        \item $A_1$ and $A_3$ are not mutually exclusive (they share $TT$)
+        \item $A_2$ and $A_3$ are not  mutually exclusive (they share $HH$)
+        \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Complement}
+  \begin{itemize}
+  \item Suppose that $A$ is an event
+  \item The event consisting of all outcomes within the sample space that
+        do not not belong to $A$ is called the complement of $A$
+  \item It is denoted by $A^c$
+      \item Example 
+        \begin{itemize}
+        \item $A_1=\{TH\}$
+        \item $A_2=\{HH\}$
+        \item $A_3=\{HH,TT\}$
+           \end{itemize}
+       \item The corresponding complements are
+         \begin{itemize}
+         \item $A_1^c=\{TT,HH,HT\}$
+         \item $A_2^c=\{TT,TH,HT\}$
+         \item $A_3=\{TH,HT\}$
+         \end{itemize}
+  \item Notes:
+    \begin{itemize}
+    \item $A$ and $A^c$ are mutually exclusive ($A\cap A^c = \varnothing$)
+    \item $A\cup A^c=\Omega$
+    \item The complement of $A^c$ is $A$
+    \item $\Omega^c=\varnothing$
+ 
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Axioms of Probability}
+    \begin{enumerate}
+    \item $0 \le P(A) \le 1$ (The probability of any event is between 0 or 1 inclusive)
+    \item $P(\Omega)=1$ (the probability of the sample space is 1)
+    \item If $A_1$ and $A_2$ are mutually exclusive, then 
+      \begin{equation*}
+        P(A_1 \cup A_2) = P(A_1) + P(A_2)
+      \end{equation*}
+    \end{enumerate}
+\end{frame}  
+    
+ \begin{frame}{Axioms of Probability: Consequences}   
+     \begin{itemize}
+   \item Consequences:
+     \begin{itemize}
+     \item $P(A^c)=1-P(A)$
+     \item $P(\varnothing)=0$
+     \item If $A \subset B$, then $P(A) \le P(B)$
+     \end{itemize}
+   \item Notes:
+     \begin{itemize}
+     \item The third axiom has been stated in terms of two events 
+       $A_1$ and $A_2$
+     \item It can be extended to $k$ mutually exclusive events
+       \begin{equation*}
+         P(A_1 \cup A_2 \cup \ldots \cup A_{k-1} \cup A_K) = 
+         P(A_1) + P(A_2) + \ldots + P(A_{k-1}) + P(A_k)
+       \end{equation*}
+     \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Marginal, Joint and Conditional Probability}
+  
+\end{frame}
+
+\begin{frame}{Law of Total Probability}
+  \begin{itemize}
+  \item Suppose that
+    \begin{itemize}
+    \item $A_1$ and $A_2$ are mutually exclusive events
+    \item $A_1\cup A_2=\Omega$ 
+    \end{itemize}
+  \item The for any event $D$, the law of total probability implies
+    \begin{equation*}
+      P(D)= P(D|A_1)P(A_1) + P(D|A_2) P(A_2)
+    \end{equation*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Law of Total Probability: Example}
+  \begin{itemize}
+    \item Problem:
+      \begin{itemize}
+      \item There will be rain or snow tomorrow (but not both)
+      \item The probability of these events 
+     \end{itemize}
+    \item Notation
+      \begin{itemize}
+      \item $A_1$: there will be rain; $P(A_1)=\frac{1}{2}$
+      \item $A_2$: there will be snow; $P(A_2)=\frac{1}{2}$
+      \item $D$: I will be late
+      \item $P(D|A_1)$: probability that I will be late given rain
+      \item $P(D|A_2)$: probability that I will be late given snow
+      \end{itemize}
+    \item Solution
+      \begin{align*}
+        P(D)& = P(D|A_1)P(A_1) + P(D|A_2) P(A_2)\\
+            & =\frac{1}{1}\times \frac{1}{1} + \frac{1}{1}\times \frac{1}{1}\\
+            &= \frac{1}{1}
+      \end{align*}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Independence}
+  \begin{itemize}
+  \item Consider two events $A_1$ and $A_2$
+  \item We say that $A_1$ is independent of $A_2$ if 
+    \begin{equation*}
+      P(A_1 \cap A_2) = P(A_1) P(A_2)
+    \end{equation*}
+  \item In other words, the joint probability equals the product
+        of marginal probabilities
+  \item Another way of expressing independence is
+    \begin{equation*}
+      P(A_1|A_2)=P(A_1)
+    \end{equation*}
+    or
+     \begin{equation*}
+      P(A_2|A_1)=P(A_2)
+    \end{equation*}
+  \item In other words, the knowledge provide by the realization of
+        one event, does {\it not} inform upon the probabaility of the
+        realization of the other event
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Random Variable}
+  \begin{itemize}
+  \item A random variable assigns to each outcome from the sample
+        space a number
+  \item Consider flipping a coin twice
+  \item Let $X$ denote the number of heads
+  \item Then
+    \begin{itemize}
+    \item $X(TT)=0$
+    \item $X(TH)=1$
+    \item $X(HT)=1$
+    \item $X(HH)=2$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}{Random Variable: Events}
+  \begin{itemize}
+  \item Consider flipping a coin twice
+  \item Let $X$ denote the number of heads
+  \item Note that we can define events in terms of
+    random variables
+  \item Examples
+    \begin{itemize}
+  \item the event that $X=1$ corresponds to the outcome being
+        $TH$ or $HT$
+  \item In other words, the event $X=1$ corresponds to the event $\{TH,HT\}$
+  \item The event that $X\le 1$ (i.e., there is at least of head) corresponds to the event $\{HH,HT,TH\}$.  
+   \end{itemize} 
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Random Variable: Distributions}
+  \begin{itemize}
+  \item Consider a random variable $X$ that either realizes value 0 or 1
+  \item The probability that $X=1$ is assumed to be $\pi$
+  \item The probability that $X=0$ is the $1-\pi$ (as the event $X=0$ is
+        the complement of the event $X=1$)
+  \item The probability that $X$ assumes any other value (other than 0 or 1) is 0
+    \item We can write
+      \begin{equation*}
+        P(X=k) = \pi^k (1-\pi)^{1-k}
+      \end{equation*}
+    \item Let's verify
+      \begin{equation*}
+         P(X=0) = \pi^0 (1-\pi)^{1-0} =\pi^0 (1-\pi)^{1} = (1-\pi),
+      \end{equation*}
+      and
+      \begin{equation*}
+         P(X=1) = \pi^1 (1-\pi)^{1-1} =\pi^1 (1-\pi)^{0} = \pi.
+      \end{equation*}
+  \end{itemize}
+\end{frame}
+\begin{frame}{Random Variable: Joint Distribution}
+  \begin{itemize}
+  \item Suppose that $X_1$ and $X_2$ each follow a Bernoulli distribution
+        with parameter $\pi$
+  \item Then
+    \begin{equation*}
+        P(X_1=k_1) = \pi^{k_1} (1-\pi)^{1-k_1},
+    \end{equation*}
+    and
+    \begin{equation*}
+        P(X_2=k_2) = \pi^{k_2} (1-\pi)^{1-k_2}
+    \end{equation*}
+  \item If we assume that $X_1$ and $X_2$ are independent, then
+    the events $X_1=k_1$ and $X_2=k_2$ are independent.
+  \item Consequently
+    \begin{align*}
+     P(X_1=k_1 \cap X_2=k_2) & = P(X_1=k_1) \times P(X_2=k_2) \\
+     & = \pi^{k_1} (1-\pi)^{1-k_1} \times \pi^{k_2} (1-\pi)^{1-k_2} \\
+     & = \pi^{k_1+k2} (1-\pi)^{2-k_1-k_2}
+    \end{align*}
+    
+  \end{itemize}
+\end{frame}
+
+

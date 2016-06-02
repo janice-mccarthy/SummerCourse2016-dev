@@ -1,0 +1,86 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  This Beamer template was created by Cameron Bracken.
+%%  Anyone can freely use or modify it for any purpose
+%%  without attribution.
+%%
+%%  Last Modified: January 9, 2009
+%%
+
+\documentclass[xcolor=x11names,compress]{beamer}
+\begin{document}
+\begin{frame}[fragile]{Load Packages}
+  \begin{itemize}
+  \item Load Packages
+<<pkg>>=
+library(DESeq2)
+library(knitr)
+@
+\item Set file names
+<<fileinfo>>=
+fastqdir="/data/Genomics/NGSCourse/Data"
+fnames=list.files(fastqdir,full.names=TRUE)
+@ 
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{Count File Information}
+<<fastqinfo,echo=FALSE>>=
+fileinfo<-data.frame(fname=basename(fnames),
+                     expid=sapply(strsplit(basename(fnames),"\\_"),"[",1),
+                     cond=rep(c("trt","untrt"),c(3,3)),
+                     md5sum=as.character(tools::md5sum(fnames)))
+kable(fileinfo)
+@   
+\end{frame}
+
+\begin{frame}[fragile]{Import Counts}
+<<importcnt>>=
+readcnts=function(fname,sep="\t",prefix="GeneID",pend=6,collab="V1",header=FALSE)
+    {
+        dat=read.table(fname,sep=sep,header=header,stringsAsFactor=FALSE)
+        dat
+        dat[substr(dat[[collab]],1,pend)==prefix,]
+    }
+
+countdat=readcnts(fnames[1])
+names(dat)[2]=fileinfo$expid[1]
+for(i in 2:length(fnames))
+    {
+        dat2=readcnts(fnames[i])
+        names(dat2)[2]=fileinfo$expid[i]
+        countdat=merge(countdat,dat2,by="V1")
+    }
+@   
+\end{frame}
+
+\begin{frame}[fragile]{DESeq2 Setup}
+<<>>=
+ds=DESeqDataSetFromMatrix(countdat[,-1], DataFrame(fileinfo), ~ cond)
+@   
+\end{frame}
+
+\begin{frame}[fragile]{Calculate "Expressions"}
+  \begin{itemize}
+  \item FPKM
+<<>>=
+FPKM=fpkm(ds)
+dim(FPKM)
+@ 
+\item Get Counts
+<<>>=
+COUNT=counts(ds)
+dim(COUNT)
+@ 
+\item Get FPM/CPM 
+<<>>=
+FPM=fpm(ds)
+dim(FPM)
+@ 
+  \end{itemize}
+\end{frame}
+
+\end{document}
+
+

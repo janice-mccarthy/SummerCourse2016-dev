@@ -1,0 +1,7 @@
+\begin{frame}{Relative Molar Concentration}
+  \begin{itemize}
+  \item Let $G$ denote the number of genes mapped in the experiment 
+  \item For a given gene $g$ $[\mathrm{mRNA}_{g}$ as the 
+  \item Define $[\mathrm{mRNA}_{\mathrm{total}}$ as the 
+  \end{itemize}
+\end{frame}

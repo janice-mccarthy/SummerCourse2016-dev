@@ -1,0 +1,120 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  This Beamer template was created by Cameron Bracken.
+%%  Anyone can freely use or modify it for any purpose
+%%  without attribution.
+%%
+%%  Last Modified: January 9, 2009
+%%
+
+\documentclass[xcolor=x11names,compress]{beamer}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{4 on 1}[letterpaper,border shrink=5mm]
+%\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage{caption}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+%\setbeamersize{text margin left=3pt,text margin right=3pt}
+
+\input{Settings/preamble}
+
+
+
+\AtBeginSection{\frame{\sectionpage}}
+
+\begin{document}
+\tikzstyle{pointing} = [pin edge={to-,thin,black}]
+\tikzset{
+    cross/.style={cross out, draw=black, inner sep=1pt, outer sep=1pt},
+}
+
+\begin{frame}
+\title{NGS Course}
+\subtitle{Week 1}
+\author{Biostatistics and Bioinformatics}
+\date{
+\input{Logo/kochcurve}\\
+\vspace{0.5cm}
+Summer 2015}
+\titlepage
+\input{Logo/logos}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Outline}
+\tableofcontents
+\end{frame}
+
+<<setup, include=FALSE>>=
+set.seed(122333)
+options(width = 75)
+par(las=1,mar=c(4,4,.1,.1))
+library(knitr)
+library(lattice)
+library(nlme)
+opts_chunk$set(fig.path='figure/beamer-',fig.align='center',fig.show='hold',size='tiny',fig.width=7, fig.height=7,out.width='.6\\linewidth')
+@ 
+
+<<pkgs,include=FALSE>>=
+library(multtest)
+library(mvtnorm)
+library(golubEsets)
+library(genefilter)
+library(Biobase)
+library(pheatmap)
+library(class)
+library(foreach)
+library(psych)
+library(DESeq2)
+data(Golub_Merge)
+B2=100
+B3=1000
+B4=10000
+B9=99999
+@ 
+
+
+
+
+\section{Introduction}
+<<intro, child='Modules/intro.Rnw'>>=
+@ 
+\section[Inference]{Elements of Statistical Inference}
+<<inference, child='Modules/inference.Rnw'>>=
+@
+\section[Model]{Model Building Illustration}
+<<modelformulation, child='Modules/modelformulation.Rnw'>>=
+@
+\section[Classification]{Elements of Supervised Learning}
+<<supervised, child='Modules/supervised.Rnw'>>=
+@
+\section[Class Discovery]{Elements of Unsupervised Learning}
+<<unsupervised, child='Modules/unsupervised.Rnw'>>=
+@
+\section[Multiple Testing]{Elements of Multiple Testing}
+<<multipletesting, child='Modules/multipletesting.Rnw'>>=
+@
+\section[Counts]{Distributions for Counts}
+<<discdist, child='Modules/discdist.Rnw'>>=
+@
+
+
+\section[GLM]{Logistic Regression}
+<<logisticmodel, child='Modules/logisticmodel.Rnw'>>=
+@
+\section[RNA-Seq GLM]{Negative Binomial GLM for RNA-Seq}
+<<deSEQ, child='Modules/deSEQ.Rnw'>>=
+@
+
+\section[Interaction]{Interaction versus Additive Effects}
+<<interaction, child='Modules/interaction.Rnw'>>=
+@
+%% \section{Misc}
+%% <<misc, child='Modules/misc.Rnw'>>=
+%% @
+
+\end{document}
+
+

@@ -1,0 +1,21 @@
+\begin{center}
+    \begin{tikzpicture}
+        \node (start)[label=below:0]{} ;
+        \node (efu)  [right of=start][node distance= 4cm][pin={[pointing]above:end follow up}] {};
+        \node (death)[right of=start][node distance= 6cm][label=below:death][cross] {};
+        \node (end)  [right of=start][node distance=10cm] {};
+        \draw[|-|] (start.center) -- (efu.center);
+        \draw[-]   (efu.center) -- (death.center);
+        \draw[-|]  (death.center) -- (end.center);
+        
+        \node (start)[label=below:0] at (0,-3) {} ;
+        \node (death)[right of=start][node distance= 6cm][label=below:death][cross] {};
+        \node (efu)  [right of=start][node distance= 9cm][pin={[pointing]above:end follow up}] {};
+        \node (end)  [right of=start][node distance=10cm] {};
+        \draw[|-] (start.center) -- (death.center);
+        \draw[-|] (death.center) -- (efu.center);
+        \draw[-|] (efu.center) -- (end.center);
+    \end{tikzpicture}
+\end{center}
+    
+    

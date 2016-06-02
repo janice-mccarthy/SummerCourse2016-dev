@@ -1,0 +1,20 @@
+\begin{center}
+    \begin{tikzpicture}
+        \node (start)     [label=below:0]{};
+        \node (expression)[right of=start][node distance= 2cm][pin={[pointing]above:expression}][cross] {};
+        \node (LQ)        [right of=start][node distance= 4cm][label=above:LQ] {};
+        \node (end)       [right of=start][node distance=10cm] {};
+        \draw[|-] (start.center) -- (expression.center);
+        \draw[-|] (expression.center) -- (LQ.center);
+        \draw[-|] (LQ.center) -- (end.center);
+        
+        \node (start)     [label=below:0] at (0,-3) {}  ;
+        \node (LQ)        [right of=start][node distance= 4cm][label=above:LQ] {};
+        \node (expression)[right of=start][node distance= 6cm][pin={[pointing]above:expression}][cross] {};
+        \node (end)       [right of=start][node distance=10cm] {};
+        \draw[|-|] (start.center) -- (LQ.center);
+        \draw[-]   (LQ.center) -- (expression.center);
+        \draw[-|]  (expression.center) -- (end.center);
+    \end{tikzpicture}
+\end{center}
+
